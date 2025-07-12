@@ -1,13 +1,12 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+- now can import with normal or default import
 
 ## [1.2.0](https://github.com/ubeyidah/envguard/compare/v1.1.1...v1.2.0) (2025-07-12)
 
-
 ### Features
 
-* support default import ([1d64572](https://github.com/ubeyidah/envguard/commit/1d64572bdd5f76febd242c28184c7eaa2356103b))
+- support default import ([1d64572](https://github.com/ubeyidah/envguard/commit/1d64572bdd5f76febd242c28184c7eaa2356103b))
 
 ### [1.1.1](https://github.com/ubeyidah/envguard/compare/v1.1.0...v1.1.1) (2025-07-12)
 
