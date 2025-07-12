@@ -17,13 +17,15 @@
     "dev": "tsx --watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "release": "standard-version"
+    "release": "standard-version",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^24.0.13",
     "standard-version": "^9.5.0",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }
