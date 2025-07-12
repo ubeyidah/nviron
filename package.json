@@ -1,6 +1,6 @@
 {
   "name": "envgaurd",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A lightweight utility to validate required environment variables at runtime.",
   "keywords": [
     "env",
