@@ -1,0 +1,29 @@
+{
+  "name": "envgaurd",
+  "version": "1.0.0",
+  "description": "A lightweight utility to validate required environment variables at runtime.",
+  "keywords": [
+    "env",
+    "dotenv",
+    "typescript",
+    "validation"
+  ],
+  "license": "ISC",
+  "author": "ubeyid oumer",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "release": "standard-version"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^24.0.13",
+    "standard-version": "^9.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
