@@ -27,6 +27,14 @@ yarn add envgaurd
 
 ```ts
 import { env } from "envgaurd";
+```
+
+```ts
+import env from "envgaurd";
+```
+
+```ts
+import { env } from "envgaurd";
 
 const dbHost = env("DB_HOST"); // throws if DB_HOST is not defined
 ```
