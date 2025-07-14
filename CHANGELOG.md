@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [1.2.1](https://github.com/ubeyidah/envguard/compare/v1.2.0...v1.2.1) (2025-07-14)
 
+- fix type defination
+- support typescirpt
+
 ## [1.2.0](https://github.com/ubeyidah/envguard/compare/v1.1.1...v1.2.0) (2025-07-12)
 
 ### Features
