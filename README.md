@@ -1,122 +1,88 @@
 # nviron
 
-A lightweight utility for safe and readable access to environment variables in Node.js and TypeScript/JavaScript projects. It ensures that required environment variables are set and provides optional fallback values.
+A minimal and developer friendly environment variable validation and management package. With **nviron**, you define, validate, and safely use environment variables in your project.
+
+## 🚀 Features
+
+- Simple environment config in one file
+- Type-safe access to environment variables
+- Validation rules (required, number, boolean, defaults, etc.)
+- Works with TypeScript and JavaScript
+- Minimal boilerplate, maximum safety
 
 ---
 
 ## 📦 Installation
 
-You can install `nviron` using your preferred package manager:
+```bash
+npm install nviron
+```
+
+or
 
 ```bash
-# npm
-npm install nviron
-
-# pnpm
 pnpm add nviron
-
-# yarn
-yarn add nviron
 ```
 
 ---
 
-## 🚀 Usage
+## 🛠 Usage
 
-### Basic Usage
+Create a file like `env.config.{ts,js}` or `utils/env.config.{ts,js}`:
 
 ```ts
-import { env } from "nviron";
+import { defineEnv } from "nviron";
+
+export const env = defineEnv({
+  PORT: { required: true, type: "number" },
+  DATABASE_URL: { required: true },
+  NODE_ENV: { default: "development" },
+});
 ```
+
+Then use it anywhere in your project:
 
 ```ts
-import env from "nviron";
+import { env } from "./env.config";
+
+console.log(env.PORT); // number
+console.log(env.DATABASE_URL); // string
+console.log(env.NODE_ENV); // "development" | "production"
 ```
+
+---
+
+## ✅ Validation Rules
+
+- **required**: throws an error if missing
+- **type**: enforce type (string, number, boolean)
+- **default**: fallback value if not set
+
+Example:
 
 ```ts
-import { env } from "nviron";
-
-const dbHost = env("DB_HOST"); // throws if DB_HOST is not defined
-```
-
-### With Default Value (Fallback)
-
-```ts
-const dbPort = env("DB_PORT", 5432); // uses 5432 if DB_PORT is not defined
-```
-
-### When Not Set and No Fallback
-
-```ts
-env("MISSING_VAR");
-// ❌ Throws: Environment variable MISSING_VAR is not set
+export const env = defineEnv({
+  API_KEY: { required: true },
+  TIMEOUT: { type: "number", default: 5000 },
+  DEBUG: { type: "boolean", default: false },
+});
 ```
 
 ---
 
-## 🔍 API Reference
+## 🤝 Contribution
 
-### `env(name: string, alt?: any): string | any`
+We welcome contributions! Please check [`CONTRIBUTING.md`](./CONTRIBUTING.md) for detailed guidelines.
 
-| Parameter | Type     | Description                                               |
-| --------- | -------- | --------------------------------------------------------- |
-| `name`    | `string` | The name of the environment variable to read.             |
-| `alt`     | `any`    | (Optional) A fallback value if the variable is undefined. |
+Basic flow:
 
-**Returns:**
-
-- The value of the environment variable as a string (or fallback `alt` if provided).
-
-**Throws:**
-
-- Error if the variable is not set and no fallback is given.
+1. Fork the repo
+2. Create a branch (`feature/add-new-rule`)
+3. Commit your changes (using conventional commits)
+4. Open a Pull Request
 
 ---
 
-## 🧠 Why use nviron?
+## 📜 License
 
-- ✅ Avoid silent failures due to missing environment variables
-- ✅ Cleaner and safer code
-- ✅ Lightweight with zero dependencies
-
----
-
-## 🛠️ TypeScript Support
-
-This package is written in TypeScript and provides full type definitions out of the box.
-
----
-
-## 📄 License
-
-MIT License
-
----
-
-## 🤝 Contributing
-
-Pull requests and issues are welcome. If you'd like to contribute, feel free to open an issue or PR.
-
----
-
-## ✨ Example `.env` file
-
-```
-DB_HOST=localhost
-DB_PORT=5432
-```
-
-Use with a `.env` loader like `dotenv` for local development:
-
-```ts
-import "dotenv/config";
-import { env } from "nviron";
-
-const host = env("DB_HOST");
-```
-
----
-
-## 💬 Feedback
-
-Have ideas to improve `nviron`? Open an issue or reach out — all suggestions welcome!
+MIT © 2025
