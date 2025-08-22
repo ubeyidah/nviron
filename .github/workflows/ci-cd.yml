@@ -44,23 +44,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Configure Git user
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
-      - name: Bump version & generate changelog
-        run: npm run release
-
-      - name: Push version commit & tag
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: "GitHub Actions"
-          author_email: "actions@github.com"
-          message: "chore(release): bump version [skip ci]"
-          push: true
-          tag: true
-
       - name: Build package
         run: npm run build
 
