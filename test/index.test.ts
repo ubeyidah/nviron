@@ -3,8 +3,8 @@ import env from "../src/index";
 
 describe("env()", () => {
   it("retrns env value", () => {
-    process.env.TEST_ENV = "envctrl";
-    expect(env("TEST_ENV")).toBe("envctrl");
+    process.env.TEST_ENV = "nviron";
+    expect(env("TEST_ENV")).toBe("nviron");
   });
 
   it("returns fallback if env is not set", () => {
