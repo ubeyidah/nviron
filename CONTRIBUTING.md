@@ -1,128 +1,112 @@
 # Contributing to Nviron
 
-First off, thank you for considering contributing to **Nviron**! 🎉
-Your help is greatly appreciated, whether it’s reporting issues, suggesting new features, or improving the codebase.
+First off, thank you for considering contributing to **Nviron**! 🚀
+
+We welcome contributions of all kinds: bug reports, feature requests, documentation improvements, and of course code contributions. This document will guide you through the process.
 
 ---
 
-## 📌 How You Can Contribute
+## 📌 How to Contribute
 
-There are many ways to get involved:
+### 1. Fork the Repository
 
-1. **Reporting Bugs**
+Click the **Fork** button at the top right of the repository page to create your own copy of the project.
 
-   - Open an issue describing the bug.
-   - Include steps to reproduce, expected behavior, and screenshots/logs if possible.
+### 2. Clone Your Fork
 
-2. **Suggesting Features**
+```bash
+git clone https://github.com/ubeyidah/nviron.git
+cd nviron
+```
 
-   - Open a feature request issue.
-   - Clearly describe the use case and why it’s useful.
+### 3. Create a Branch
 
-3. **Improving Documentation**
+Use a descriptive name for your branch:
 
-   - Typos, unclear instructions, or missing details are all valid contributions.
-   - You can edit the `README.md` or add examples.
+```bash
+git checkout -b feat/short-description
+```
 
-4. **Code Contributions**
+Examples:
 
-   - Fix bugs or add enhancements.
-   - Improve test coverage.
-   - Refactor or clean up code for maintainability.
+- `feat/add-schema-validation`
+- `fix/env-parsing`
+- `docs/update-readme`
 
----
+### 4. Make Your Changes
 
-## ⚙️ Development Setup
+- Follow the existing coding style.
+- Add tests if applicable.
+- Ensure all tests pass before committing.
 
-1. **Clone the repository**
+### 5. Commit Your Changes
 
-   ```bash
-   git clone https://github.com/ubeyidah/nviron.git
-   cd nviron
-   ```
+We use **Conventional Commits** format:
 
-2. **Install dependencies**
-
-   ```bash
-   pnpm install
-   ```
-
-3. **Run tests**
-
-   ```bash
-   pnpm run test
-   ```
-
-4. **Build the package**
-
-   ```bash
-   pnpm run build
-   ```
+```bash
+git commit -m "feat: add number validation support"
+```
 
 ---
 
-## 🌿 Branching & Workflow
+## 🧪 Running Tests
 
-- Use **feature branches** for new work:
+We use **Vitest** for testing. Run the test suite with:
 
-  ```
-  git checkout -b feat/<short-description>
-  ```
+```bash
+npm run test
+```
 
-- For bug fixes:
+### 6. Push Your Branch
 
-  ```
-  git checkout -b fix/<short-description>
-  ```
+```bash
+git push origin feat/short-description
+```
 
-  Example: `fix/env-parsing`
+### 7. Open a Pull Request
 
-- Keep your branch up-to-date with `main`:
-
-  ```bash
-  git pull origin main
-  ```
+Go to the original repo and open a PR with a clear title and description.
 
 ---
 
-## ✅ Commit Guidelines
+## 📝 Code Style
 
-We follow **Conventional Commits** for clean and automated changelogs:
-
-- `feat:` – New feature
-- `fix:` – Bug fix
-- `docs:` – Documentation only changes
-- `test:` – Adding or updating tests
-- `chore:` – Maintenance tasks
+- TypeScript is required.
+- Keep functions small and focused.
+- Prefer clarity over cleverness.
+- Ensure consistent formatting (Prettier + ESLint).
 
 ---
 
-## 🔍 Pull Request Process
+## 🤝 Contribution Types
 
-1. Fork the repo and create your branch from `main`.
-2. Make sure all tests pass (`npm run test`).
-3. Update documentation if needed.
-4. Submit a **pull request (PR)** with a clear description.
-
----
-
-## 💡 Tips for Contributors
-
-- Write small, focused commits.
-- Add tests for new features/bug fixes.
-- Keep code style consistent with the project.
+- **Code**: Bug fixes, features, refactoring.
+- **Docs**: README, tutorials, guides, examples.
+- **Tests**: Improving test coverage.
+- **Community**: Helping answer questions, reporting issues.
 
 ---
 
-## 🙌 Community
+## 🙌 Community Guidelines
 
-Contributions aren’t limited to code!
-
-- Share ideas, give feedback, and help others in discussions.
-- Star ⭐ the repo to support the project.
+- Be respectful and inclusive.
+- Provide constructive feedback.
+- Collaborate and help others.
 
 ---
 
-## 📝 License
+## 🐛 Reporting Issues
 
-By contributing, you agree that your contributions will be licensed under the **MIT License** of this project.
+If you encounter a bug or want to suggest a feature:
+
+1. Search existing issues first.
+2. If not found, open a new issue with details and steps to reproduce.
+
+---
+
+## 🚀 Getting Help
+
+- Open an issue in GitHub.
+- Join discussions in the repo.
+
+We’re excited to see your contributions! 💜
