@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/ubeyidah/envguard/compare/v1.2.2...v1.3.0) (2025-08-22)
+
+
+### Features
+
+* make the version same as the npm ([373fb53](https://github.com/ubeyidah/envguard/commit/373fb530a408407248735b646f96ff9170553b3c))
+
 ### [1.2.1](https://github.com/ubeyidah/envguard/compare/v1.2.0...v1.2.1) (2025-07-14)
 
 - fix type defination

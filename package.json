@@ -1,12 +1,13 @@
 {
-  "name": "envgaurd",
-  "version": "1.2.2",
+  "name": "envctrl",
+  "version": "1.3.0",
   "description": "A lightweight utility to validate required environment variables at runtime.",
   "keywords": [
     "env",
     "dotenv",
     "typescript",
-    "validation"
+    "validation",
+    "envctrl"
   ],
   "license": "ISC",
   "author": "ubeyid oumer",
