@@ -1,4 +1,4 @@
-# envgaurd
+# envctrl
 
 A lightweight utility for safe and readable access to environment variables in Node.js and TypeScript/JavaScript projects. It ensures that required environment variables are set and provides optional fallback values.
 
@@ -6,17 +6,17 @@ A lightweight utility for safe and readable access to environment variables in N
 
 ## 📦 Installation
 
-You can install `envgaurd` using your preferred package manager:
+You can install `envctrl` using your preferred package manager:
 
 ```bash
 # npm
-npm install envgaurd
+npm install envctrl
 
 # pnpm
-pnpm add envgaurd
+pnpm add envctrl
 
 # yarn
-yarn add envgaurd
+yarn add envctrl
 ```
 
 ---
@@ -26,15 +26,15 @@ yarn add envgaurd
 ### Basic Usage
 
 ```ts
-import { env } from "envgaurd";
+import { env } from "envctrl";
 ```
 
 ```ts
-import env from "envgaurd";
+import env from "envctrl";
 ```
 
 ```ts
-import { env } from "envgaurd";
+import { env } from "envctrl";
 
 const dbHost = env("DB_HOST"); // throws if DB_HOST is not defined
 ```
@@ -73,7 +73,7 @@ env("MISSING_VAR");
 
 ---
 
-## 🧠 Why use envgaurd?
+## 🧠 Why use envctrl?
 
 - ✅ Avoid silent failures due to missing environment variables
 - ✅ Cleaner and safer code
@@ -110,7 +110,7 @@ Use with a `.env` loader like `dotenv` for local development:
 
 ```ts
 import "dotenv/config";
-import { env } from "envgaurd";
+import { env } from "envctrl";
 
 const host = env("DB_HOST");
 ```
@@ -119,4 +119,4 @@ const host = env("DB_HOST");
 
 ## 💬 Feedback
 
-Have ideas to improve `envgaurd`? Open an issue or reach out — all suggestions welcome!
+Have ideas to improve `envctrl`? Open an issue or reach out — all suggestions welcome!
