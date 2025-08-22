@@ -47,6 +47,18 @@ jobs:
       - name: Build package
         run: npm run build
 
+      - name: Bump version & generate changelog
+        run: pnpm run release
+
+      - name: Push version commit & tag
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: "GitHub Actions"
+          author_email: "actions@github.com"
+          message: "chore(release): bump version [skip ci]"
+          push: true
+          tag: true
+
       - name: Publish to npm
         run: npm publish --access public
         env:
