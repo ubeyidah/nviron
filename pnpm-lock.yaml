@@ -23,18 +23,12 @@ importers:
       next:
         specifier: ^15.5.0
         version: 15.5.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      nviron:
-        specifier: workspace:*
-        version: link:../../packages/nviron
       react:
         specifier: ^19.1.0
         version: 19.1.0
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
-      zod:
-        specifier: ^4.1.12
-        version: 4.1.12
     devDependencies:
       '@nviron/eslint-config':
         specifier: workspace:*
