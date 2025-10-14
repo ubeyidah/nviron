@@ -1,6 +1,6 @@
 {
   "name": "@nviron/core",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "./src/index.ts",
   "scripts": {
@@ -8,6 +8,12 @@
     "check-types": "tsc --noEmit",
     "dev": "tsc --watch src/index.ts",
     "build": "tsc"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
   },
   "keywords": [],
   "author": "Ubeyidah",
