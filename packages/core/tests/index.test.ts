@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { envValidator } from "./../src/core/validator";
 import z from "zod";
 
