@@ -1,4 +1,4 @@
-# nviron
+# Nviron
 
 A minimal and developer friendly environment variable validation and management package. With **nviron**, you define, validate, and safely use environment variables in your project.
 
