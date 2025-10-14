@@ -1,0 +1,25 @@
+{
+  "name": "@nviron/core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "dev": "tsc --watch src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "Ubeyidah",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@nviron/eslint-config": "workspace:*",
+    "@nviron/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.34.0",
+    "typescript": "5.9.2"
+  }
+}
