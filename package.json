@@ -1,35 +1,20 @@
 {
   "name": "nviron",
-  "version": "1.5.0",
-  "description": "A lightweight utility to validate required environment variables at runtime.",
-  "keywords": [
-    "env",
-    "dotenv",
-    "typescript",
-    "validation",
-    "nviron"
-  ],
-  "license": "ISC",
-  "author": "ubeyid oumer",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "type": "module",
-  "files": [
-    "dist"
-  ],
+  "private": true,
   "scripts": {
-    "dev": "tsx --watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "release": "standard-version",
-    "test": "vitest run"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.2",
-    "@types/node": "^24.0.13",
-    "standard-version": "^9.5.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.8",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
   }
 }
