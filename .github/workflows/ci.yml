@@ -41,11 +41,11 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
-      - name: Run type checks
-        run: pnpm check-types
-
       - name: Build packages
         run: pnpm build
+
+      - name: Run type checks
+        run: pnpm check-types
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
