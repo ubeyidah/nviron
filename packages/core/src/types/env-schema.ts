@@ -1,3 +1,3 @@
-import { ZodAny } from "zod";
+import type { ZodRawShape } from "zod";
 
-export type EnvSchema = Record<string, ZodAny>;
+export type EnvSchema = ZodRawShape;
