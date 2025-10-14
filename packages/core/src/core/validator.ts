@@ -10,10 +10,17 @@ export const envValidator = <T extends EnvSchema>(
   const parsed = zodObject.safeParse(envData);
 
   if (!parsed.success) {
-    parsed.error.issues.forEach((err) => {
-      logger.error(err.message); // TODO: provide better log
+    const issues = parsed.error.issues;
+
+    logger.header();
+    logger.summary(issues.length);
+
+    issues.forEach((issue, i) => {
+      const field = issue.path.join(".") || "unknown";
+      logger.issue(i + 1, field, issue.message);
     });
 
+    logger.tip();
     process.exit(1);
   }
 
