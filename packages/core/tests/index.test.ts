@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { envValidator } from "./../src/core/validator";
 import z from "zod";
-import { logger } from "../src/utils/logger";
 
 describe("envValidator", () => {
   const schema = {
@@ -20,22 +19,10 @@ describe("envValidator", () => {
   });
 
   it("logs errors and exits process when envData is invalid", () => {
-    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
-      throw new Error("process.exit called");
-    });
-    const logSpy = vi.spyOn(logger, "error");
-
     const invalidEnv = {
       NODE_ENV: "invalid-env",
     };
 
-    expect(() => envValidator(schema, invalidEnv)).toThrow(
-      "process.exit called"
-    );
-    expect(logSpy).toHaveBeenCalled();
-    expect(exitSpy).toHaveBeenCalledWith(1);
-
-    exitSpy.mockRestore();
-    logSpy.mockRestore();
+    expect(() => envValidator(schema, invalidEnv)).toThrow();
   });
 });

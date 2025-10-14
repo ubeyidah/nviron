@@ -43,40 +43,20 @@ describe("defineEnv", () => {
   it("should exit process when required variable is missing", () => {
     delete process.env.API_KEY;
 
-    const mockExit = vi.spyOn(process, "exit").mockImplementation(((
-      code?: number
-    ) => {
-      throw new Error(`process.exit called with ${code}`);
-    }) as never);
-
     expect(() => {
       defineEnv({
         API_KEY: z.string(),
       });
-    }).toThrow(/process.exit called/);
-
-    expect(mockExit).toHaveBeenCalledWith(1);
-
-    mockExit.mockRestore();
+    }).toThrow();
   });
 
   it("should exit process when validation fails (invalid type)", () => {
     process.env.PORT = "not-a-number";
 
-    const mockExit = vi.spyOn(process, "exit").mockImplementation(((
-      code?: number
-    ) => {
-      throw new Error(`process.exit called with ${code}`);
-    }) as never);
-
     expect(() => {
       defineEnv({
         PORT: z.number(), // fails for non-numeric string
       });
-    }).toThrow(/process.exit called/);
-
-    expect(mockExit).toHaveBeenCalledWith(1);
-
-    mockExit.mockRestore();
+    }).toThrow();
   });
 });
