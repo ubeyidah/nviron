@@ -153,6 +153,34 @@ importers:
         specifier: ^8.40.0
         version: 8.40.0(eslint@9.34.0)(typescript@5.9.2)
 
+  packages/nviron:
+    dependencies:
+      '@nviron/core':
+        specifier: workspace:*
+        version: link:../core
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
+    devDependencies:
+      '@nviron/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@nviron/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
+      eslint:
+        specifier: ^9.34.0
+        version: 9.34.0
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.15.3)
+
   packages/typescript-config: {}
 
   packages/ui:
@@ -1862,6 +1890,7 @@ packages:
   typescript@5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
+    hasBin: true
 
   unbox-primitive@1.1.0:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}

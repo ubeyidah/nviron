@@ -1,5 +1,5 @@
 {
-  "name": "nviron",
+  "name": "@nviron",
   "private": true,
   "scripts": {
     "build": "turbo run build",
