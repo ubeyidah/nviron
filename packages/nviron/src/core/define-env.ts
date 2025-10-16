@@ -1,4 +1,5 @@
-import { EnvSchema, envValidator } from "@nviron/core";
+import { EnvSchema } from "../types/env-schema";
+import { envValidator } from "./validator";
 
 /**
  * Define and validate your environment variables.

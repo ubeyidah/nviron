@@ -1,6 +1,6 @@
 import { paint } from "./ansi-colors";
 
-export const logger = {
+class Logger {
   header() {
     console.log(
       paint.red(
@@ -11,8 +11,7 @@ export const logger = {
         } `}\n`
       )
     );
-  },
-
+  }
   summary(total: number) {
     console.log(
       paint.bold(
@@ -21,7 +20,7 @@ export const logger = {
         )
       )
     );
-  },
+  }
 
   issue(index: number, name: string, message: string) {
     let reason = message;
@@ -33,7 +32,7 @@ export const logger = {
     console.log(
       `${paint.gray(`${index}.`)} ${paint.cyan(paint.bold(name))} ${paint.red("→")} ${paint.red(reason)}`
     );
-  },
+  }
 
   tip() {
     console.log(
@@ -41,5 +40,7 @@ export const logger = {
         "\n💡 Check your .env file or environment variables before starting the server."
       )
     );
-  },
-};
+  }
+}
+
+export { Logger };

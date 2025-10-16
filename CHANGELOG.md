@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/ubeyidah/nviron/compare/v2.1.0...v2.1.1) (2025-10-16)
+
+### Documentation
+
+- Add README.md to npm package
+
+## [2.1.0](https://github.com/ubeyidah/nviron/compare/v2.0.0...v2.1.0) (2025-10-16)
+
+### Refactors
+
+- Merge internal core package directly into main Nviron package
+- Convert logger object into class-based structure for extensibility and better color-coded output
+- Improved internal directory structure and code clarity
+
+### Chores
+
+- Clean tsconfig and package structure
+- Remove unused workspace dependency on `@nviron/core`
+
+**Full Changelog**: https://github.com/ubeyidah/nviron/compare/v2.0.0...v2.1.0
+
 ## [2.0.0](https://github.com/ubeyidah/nviron/compare/v1.5.0...v2.0.0) (2025-10-15)
 
 ### Breaking Changes

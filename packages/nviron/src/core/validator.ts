@@ -1,6 +1,6 @@
 import z, { ZodObject } from "zod";
 import { EnvSchema } from "../types/env-schema";
-import { logger } from "../utils/logger";
+import { Logger } from "../utils/logger";
 
 export const envValidator = <T extends EnvSchema>(
   schema: T,
@@ -10,6 +10,7 @@ export const envValidator = <T extends EnvSchema>(
   const parsed = zodObject.safeParse(envData);
 
   if (!parsed.success) {
+    const logger = new Logger();
     const issues = parsed.error.issues;
 
     logger.header();
