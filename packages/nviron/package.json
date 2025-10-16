@@ -21,7 +21,6 @@
   "author": "Ubeyidah",
   "license": "ISC",
   "dependencies": {
-    "@nviron/core": "workspace:*",
     "zod": "^4.1.12"
   },
   "devDependencies": {

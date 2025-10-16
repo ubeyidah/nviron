@@ -52,31 +52,6 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  packages/core:
-    dependencies:
-      zod:
-        specifier: ^4.1.12
-        version: 4.1.12
-    devDependencies:
-      '@nviron/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@nviron/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/node':
-        specifier: ^22.15.3
-        version: 22.15.3
-      eslint:
-        specifier: ^9.34.0
-        version: 9.34.0
-      typescript:
-        specifier: 5.9.2
-        version: 5.9.2
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.15.3)
-
   packages/eslint-config:
     devDependencies:
       '@eslint/js':
@@ -115,9 +90,6 @@ importers:
 
   packages/nviron:
     dependencies:
-      '@nviron/core':
-        specifier: workspace:*
-        version: link:../core
       zod:
         specifier: ^4.1.12
         version: 4.1.12

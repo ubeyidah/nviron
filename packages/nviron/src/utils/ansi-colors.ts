@@ -4,9 +4,6 @@ export const ansi = {
   bold: "\x1b[1m",
   dim: "\x1b[2m",
   italic: "\x1b[3m",
-  underline: "\x1b[4m",
-  inverse: "\x1b[7m",
-  noInverse: "\x1b[27m",
 
   // Foreground colors
   black: "\x1b[30m",
@@ -59,7 +56,4 @@ export const paint = {
   bold: (msg: string) => `${ansi.bold}${msg}${ansi.reset}`,
   dim: (msg: string) => `${ansi.dim}${msg}${ansi.reset}`,
   italic: (msg: string) => `${ansi.italic}${msg}${ansi.reset}`,
-  underline: (msg: string) => `${ansi.underline}${msg}${ansi.reset}`,
-  inverse: (msg: string) =>
-    `${ansi.inverse}${msg}${ansi.noInverse}${ansi.reset}`,
 };
