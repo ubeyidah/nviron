@@ -117,4 +117,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  .bg-gradient {
+    @apply bg-gradient-to-l from-transparent via-red-800/30 to-transparent;
+  }
+}
+
+.hero-h {
+  height: calc(100vh - 60px);
 }

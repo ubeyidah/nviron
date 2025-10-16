@@ -1,11 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { Hero } from "./_components/hero";
+import { Features } from "./_components/features";
 
 const Page = () => {
   return (
-    <div>
-      NVIRON
-      <Button>Get Started</Button>
-    </div>
+    <>
+      <Hero />
+      <Features />
+    </>
   );
 };
 
