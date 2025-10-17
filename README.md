@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/ubeyidah/nviron">
-    <img src="./apps/web/public/logo.png" alt="Logo" height="80">
+    <img src="./docs/public/logo.png" alt="Logo" height="80">
   </a>
 
 <h3 align="center">NVIRON</h3>
