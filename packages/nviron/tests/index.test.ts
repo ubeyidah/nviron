@@ -1,88 +1,125 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { z } from "zod";
-import defineEnv from "../src/index";
-import { envValidator } from "../src/core/validator";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import z from "zod";
+import { normalizeEnv } from "../src/utils/utils";
+import { validateEnv } from "../src/core/validator";
+import defineEnv from "../src/core/define-env";
 
-describe("envValidator", () => {
-  const schema = {
-    NODE_ENV: z.enum(["development", "production"]),
-    PORT: z.string(),
-  };
-
-  it("returns parsed data when envData is valid", () => {
-    const env = {
-      NODE_ENV: "development",
-      PORT: "3000",
-    };
-
-    const result = envValidator(schema, env);
-    expect(result).toEqual(env);
-  });
-
-  it("logs errors and exits process when envData is invalid", () => {
-    const invalidEnv = {
-      NODE_ENV: "invalid-env",
-    };
-
-    expect(() => envValidator(schema, invalidEnv)).toThrow();
-  });
-});
-
-describe("defineEnv", () => {
-  const ORIGINAL_ENV = process.env;
-
+describe("Environment Utilities", () => {
   beforeEach(() => {
-    process.env = { ...ORIGINAL_ENV };
-  });
-
-  afterEach(() => {
-    process.env = ORIGINAL_ENV;
     vi.restoreAllMocks();
   });
 
-  it("should parse and coerce valid environment variables", () => {
-    process.env.PORT = "3000";
-    process.env.DEBUG = "true";
+  describe("normalizeEnv", () => {
+    it("should normalize prefixed keys", () => {
+      const env = {
+        VITE_PORT: "3000",
+        DATABASE_URL: "postgres://localhost",
+      };
 
-    const env = defineEnv({
-      PORT: z.coerce.number(),
-      DEBUG: z.coerce.boolean().default(false),
+      const normalized = normalizeEnv(env, "VITE_");
+
+      expect(normalized).toEqual({
+        PORT: "3000",
+        DATABASE_URL: "postgres://localhost",
+      });
     });
 
-    expect(env.PORT).toBe(3000);
-    expect(env.DEBUG).toBe(true);
+    it("should return original env if no prefix is provided", () => {
+      const env = { PORT: "3000" };
+      const normalized = normalizeEnv(env);
+      expect(normalized).toEqual(env);
+    });
   });
 
-  it("should apply default values when variables are missing", () => {
-    delete process.env.PORT;
-    delete process.env.DEBUG;
+  describe("validateEnv", () => {
+    it("should validate correct env variables", () => {
+      const env = {
+        PORT: "3000",
+        DATABASE_URL: "postgres://localhost",
+      };
 
-    const env = defineEnv({
-      PORT: z.coerce.number().default(8080),
-      DEBUG: z.coerce.boolean().default(false),
+      const schema = {
+        PORT: z.coerce.number(),
+        DATABASE_URL: z.string().url(),
+      };
+
+      const validated = validateEnv(schema, env, {});
+      expect(validated).toEqual({
+        PORT: 3000,
+        DATABASE_URL: "postgres://localhost",
+      });
     });
 
-    expect(env.PORT).toBe(8080);
-    expect(env.DEBUG).toBe(false);
+    it("should validate prefixed env variables", () => {
+      const env = {
+        VITE_PORT: "4000",
+        VITE_DATABASE_URL: "postgres://localhost",
+      };
+
+      const schema = {
+        PORT: z.coerce.number(),
+        DATABASE_URL: z.string().url(),
+      };
+
+      const validated = validateEnv(schema, env, { prefix: "VITE_" });
+      expect(validated).toEqual({
+        PORT: 4000,
+        DATABASE_URL: "postgres://localhost",
+      });
+    });
+
+    it("should exit process on invalid env", () => {
+      const env = {
+        PORT: "not-a-number",
+      };
+      const schema = {
+        PORT: z.coerce.number(),
+      };
+
+      const exitMock = vi.spyOn(process, "exit").mockImplementation(() => {
+        throw new Error("process.exit called");
+      });
+
+      expect(() => validateEnv(schema, env, {})).toThrow("process.exit called");
+      expect(exitMock).toHaveBeenCalledWith(1);
+    });
   });
 
-  it("should exit process when required variable is missing", () => {
-    delete process.env.API_KEY;
+  describe("defineEnv", () => {
+    it("should validate using defineEnv wrapper", () => {
+      const env = {
+        PORT: "5000",
+        DATABASE_URL: "postgres://localhost",
+      };
 
-    expect(() => {
-      defineEnv({
-        API_KEY: z.string(),
+      const schema = {
+        PORT: z.coerce.number(),
+        DATABASE_URL: z.string().url(),
+      };
+
+      const validated = defineEnv(schema, { source: env });
+      expect(validated).toEqual({
+        PORT: 5000,
+        DATABASE_URL: "postgres://localhost",
       });
-    }).toThrow();
-  });
+    });
 
-  it("should exit process when validation fails (invalid type)", () => {
-    process.env.PORT = "not-a-number";
+    it("should validate with prefix using defineEnv", () => {
+      const env = {
+        VITE_PORT: "6000",
+        VITE_DATABASE_URL: "postgres://localhost",
+      };
 
-    expect(() => {
-      defineEnv({
-        PORT: z.number(), // fails for non-numeric string
+      const schema = {
+        PORT: z.coerce.number(),
+        DATABASE_URL: z.string().url(),
+      };
+
+      const validated = defineEnv(schema, { source: env, prefix: "VITE_" });
+      expect(validated).toEqual({
+        PORT: 6000,
+        DATABASE_URL: "postgres://localhost",
       });
-    }).toThrow();
+    });
   });
 });
