@@ -1,6 +1,7 @@
-import { ConfigType } from "../types";
+import z from "zod";
+import { EnvConfig } from "../types";
 import { EnvSchema } from "../types/env-schema";
-import { envValidator } from "./validator";
+import { validateEnv } from "./validator";
 
 /**
  * Define and validate your environment variables.
@@ -26,9 +27,12 @@ import { envValidator } from "./validator";
  * @throws Will exit the process if required variables are missing or invalid
  */
 
-const defineEnv = <T extends EnvSchema>(schema: T, config: ConfigType) => {
+const defineEnv = <T extends EnvSchema>(
+  schema: T,
+  config: EnvConfig
+): z.infer<z.ZodObject<T>> => {
   const source = config.source || process.env;
-  return envValidator(schema, source);
+  return validateEnv(schema, source, config);
 };
 
 export default defineEnv;

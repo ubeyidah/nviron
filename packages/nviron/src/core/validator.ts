@@ -1,14 +1,17 @@
 import z, { ZodObject } from "zod";
 import { EnvSchema } from "../types/env-schema";
 import { Logger } from "../utils/logger";
-import { EnvData } from "../types";
+import { EnvConfig, EnvData } from "../types";
+import { normalizeEnv } from "../utils/utils";
 
-export const envValidator = <T extends EnvSchema>(
+export const validateEnv = <T extends EnvSchema>(
   schema: T,
-  envData: EnvData
+  envData: EnvData,
+  config: EnvConfig
 ): z.infer<ZodObject<T>> => {
+  const normalizedEnv = normalizeEnv(envData, config.prefix);
   const zodObject = z.object(schema);
-  const parsed = zodObject.safeParse(envData);
+  const parsed = zodObject.safeParse(normalizedEnv);
 
   if (!parsed.success) {
     const logger = new Logger();
