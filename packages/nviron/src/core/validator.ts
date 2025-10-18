@@ -1,10 +1,11 @@
 import z, { ZodObject } from "zod";
 import { EnvSchema } from "../types/env-schema";
 import { Logger } from "../utils/logger";
+import { EnvData } from "../types";
 
 export const envValidator = <T extends EnvSchema>(
   schema: T,
-  envData: Record<string, unknown>
+  envData: EnvData
 ): z.infer<ZodObject<T>> => {
   const zodObject = z.object(schema);
   const parsed = zodObject.safeParse(envData);

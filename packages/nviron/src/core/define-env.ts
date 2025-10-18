@@ -1,3 +1,4 @@
+import { ConfigType } from "../types";
 import { EnvSchema } from "../types/env-schema";
 import { envValidator } from "./validator";
 
@@ -25,8 +26,9 @@ import { envValidator } from "./validator";
  * @throws Will exit the process if required variables are missing or invalid
  */
 
-const defineEnv = <T extends EnvSchema>(schema: T) => {
-  return envValidator(schema, process.env);
+const defineEnv = <T extends EnvSchema>(schema: T, config: ConfigType) => {
+  const source = config.source || process.env;
+  return envValidator(schema, source);
 };
 
 export default defineEnv;
