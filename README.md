@@ -1,6 +1,4 @@
-<a id="readme-top"></a>
 
-<br />
 <div align="center">
   <a href="https://github.com/ubeyidah/nviron">
     <img src="./docs/public/logo.png" alt="Logo" height="80">
