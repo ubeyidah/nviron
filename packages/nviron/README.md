@@ -1,9 +1,5 @@
-<a id="readme-top"></a>
-
-<br />
 <div align="center">
-
-<h3 align="center">NVIRON</h3>
+<h2 align="center">NVIRON</h2>
 
   <p align="center">Nviron is a lightweight, type-safe e[nviron]ment variable management library built for modern JavaScript and TypeScript projects. It helps you define, validate, and safely access environment variables using <a href="https://zod.dev">Zod</a>.
     <br />
@@ -32,44 +28,45 @@ Instead of manually checking `process.env` or writing repetitive validation logi
 To start using nviron, simply install it in your Node.js or TypeScript project.
 It’s lightweight, type-safe, and works out of the box with Zod
 
-📦 Installation
+Install `nviron` and optionally `zod` (only if you need full Zod functionality outside of `nviron`):
 
-Using your preferred package manager:
+## Using pnpm
 
 ```bash
-# Using pnpm
 pnpm add nviron zod
 ```
 
+## or npm
+
 ```bash
-# or npm
 npm install nviron zod
 ```
 
-```bash
-# or yarn
-yarn add nviron zod
+## or yarn
 
+```bash
+yarn add nviron zod
 ```
 
-### 🧩 Requirements
+nviron re-exports Zod as z, so for defining and validating environment variables you can do:
 
----
+```ts
+import { defineEnv, z } from "nviron";
 
-Node.js 18 or higher
-
-TypeScript (recommended for type-safety)
-
-Zod (peer dependency for validation)
+const env = defineEnv({
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+});
+```
 
 ## Usage
 
 Here’s a quick example to get started:
 
 ```ts
-import { defineEnv } from "nviron";
-import { z } from "zod";
+import { defineEnv, z } from "nviron";
 
+// Default usage (process.env)
 const env = defineEnv({
   PORT: z.coerce.number(),
   DATABASE_URL: z.string().url(),
@@ -77,7 +74,31 @@ const env = defineEnv({
 });
 
 console.log(env.PORT); // Safely typed & validated
+
+// Using a custom source and prefix (e.g., Vite)
+const envVite = defineEnv(
+  {
+    PORT: z.coerce.number(),
+    DATABASE_URL: z.string().url(),
+    NODE_ENV: z.enum(["development", "production"]),
+  },
+  {
+    source: import.meta.env, // or any custom object
+    prefix: "VITE_",
+  }
+);
+
+console.log(envVite.PORT); // Typed & validated
 ```
+
+### Optional Config
+
+`defineEnv(schema, config?)` accepts an optional configuration object:
+
+- `source?: EnvData` — Environment source object (defaults to `process.env`).
+- `prefix?: string` — Prefix to strip from environment variable names before validation (useful for Vite or custom setups).
+
+> ⚠️ Prefixed variables (like `VITE_PORT`) are automatically normalized to match your schema keys (`PORT`) before validation.
 
 If any variable is missing or invalid, nviron will display a clear, color-coded error message and exit gracefully helping you catch issues early.
 
@@ -92,6 +113,15 @@ If any variable is missing or invalid, nviron will display a clear, color-coded 
 
 💡 Check your .env file or environment variables before starting the server.
 ```
+
+### Types & Zod
+
+`nviron` exports types to improve TypeScript experience:
+
+- `EnvConfig` - config object shape
+- `EnvSchema` - type for your environment schema
+- `ValidatedEnv` - type of the validated environment object
+- `z` - re-exported Zod for convenience
 
 For more examples, detailed configuration options, please refer to the <a href="https://nviron.vercel.app">Documentation</a>
 
@@ -114,8 +144,3 @@ We believe open source grows stronger through collaboration whether it’s bug f
 If you’d like to contribute, please read our detailed [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 #### Don’t forget to ⭐ star the repo if you find it helpful, it really means a lot!
-
-## 📬 Contact
-
-Developed and maintained by [@ubeyidah](https://twitter.com/ubeyidah)  
-📧 Email: **ubeyidah@gmail.com**
