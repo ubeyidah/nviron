@@ -8,8 +8,7 @@ import { validateEnv } from "./validator";
  *
  * @example
  * ```ts
- * import { defineEnv } from "@nviron/core";
- * import { z } from "zod";
+ * import { defineEnv, z } from "@nviron/core";
  *
  * const env = defineEnv({
  *   PORT: z.coerce.number().default(3000),
@@ -31,7 +30,7 @@ import { validateEnv } from "./validator";
 
 const defineEnv = <T extends EnvSchema>(
   schema: T,
-  config: EnvConfig
+  config: EnvConfig = {}
 ): z.infer<z.ZodObject<T>> => {
   const source = config.source || process.env;
   return validateEnv(schema, source, config);

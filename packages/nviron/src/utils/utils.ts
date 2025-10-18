@@ -7,5 +7,10 @@ export const normalizeEnv = (envData: EnvData, prefix?: string): EnvData => {
     .filter(([key]) => key.startsWith(prefix))
     .map(([key, value]) => [key.slice(prefix.length), value]);
 
-  return { ...envData, ...Object.fromEntries(prefixed) };
+  return {
+    ...Object.fromEntries(
+      Object.entries(envData).filter(([key]) => !key.startsWith(prefix))
+    ),
+    ...Object.fromEntries(prefixed),
+  };
 };
