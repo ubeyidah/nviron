@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.3](https://github.com/ubeyidah/nviron/compare/v2.1.2...v2.1.3) (2025-10-18)
+
+### Features & Improvements
+
+- Add optional `EnvConfig` parameter to `defineEnv` with `source` and `prefix` support (Vite and custom env objects)
+- Export types for better DX: `EnvConfig`, `EnvSchema`, and `ValidatedEnv`
+- Re-export `z` from Zod for simpler imports and usage
+- Update README to reflect new config, types, and Zod re-export
+
 ### [2.1.1](https://github.com/ubeyidah/nviron/compare/v2.1.0...v2.1.1) (2025-10-16)
 
 ### Documentation
