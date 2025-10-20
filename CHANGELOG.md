@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.5](https://github.com/ubeyidah/nviron/compare/v2.1.4...v2.1.5) (2025-10-20)
+
+### 🛠 Build Fix
+
+- Rebuilt and republished the package to fix missing build output from v2.1.4.  
+  (No functional code changes — only ensures proper compiled files are included in the npm package.)
+
 ## [2.1.4](https://github.com/ubeyidah/nviron/compare/v2.1.3...v2.1.4) (2025-10-20)
 
 ### Fixes
