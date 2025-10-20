@@ -9,7 +9,7 @@ export const validateEnv = <T extends EnvSchema>(
   envData: EnvData,
   config: EnvConfig
 ): z.infer<ZodObject<T>> => {
-  const normalizedEnv = normalizeEnv(envData, config.prefix);
+  const { normalizedEnv, keyMap } = normalizeEnv(envData, config.prefix);
   const zodObject = z.object(schema);
   const parsed = zodObject.safeParse(normalizedEnv);
 
@@ -21,8 +21,9 @@ export const validateEnv = <T extends EnvSchema>(
     logger.summary(issues.length);
 
     issues.forEach((issue, i) => {
-      const field = issue.path.join(".") || "unknown";
-      logger.issue(i + 1, field, issue.message);
+      const normalizedKey = issue.path.join(".") || "unknown";
+      const originalKey = keyMap[normalizedKey] || normalizedKey;
+      logger.issue(i + 1, normalizedKey, issue.message, originalKey);
     });
 
     logger.tip();

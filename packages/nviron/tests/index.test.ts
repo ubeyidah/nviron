@@ -4,6 +4,14 @@ import { normalizeEnv } from "../src/utils/utils";
 import { validateEnv } from "../src/core/validator";
 import defineEnv from "../src/core/define-env";
 
+// Helper to strip ANSI color codes for easier assertion
+const stripAnsi = (str: string) =>
+  str.replace(
+    // eslint-disable-next-line no-control-regex
+    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-PRZcf-nqry=><]/g,
+    ""
+  );
+
 describe("Environment Utilities", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -19,15 +27,37 @@ describe("Environment Utilities", () => {
       const normalized = normalizeEnv(env, "VITE_");
 
       expect(normalized).toEqual({
-        PORT: "3000",
-        DATABASE_URL: "postgres://localhost",
+        normalizedEnv: {
+          PORT: "3000",
+          DATABASE_URL: "postgres://localhost",
+        },
+        keyMap: {
+          PORT: "VITE_PORT",
+          DATABASE_URL: "DATABASE_URL",
+        },
       });
     });
 
     it("should return original env if no prefix is provided", () => {
       const env = { PORT: "3000" };
       const normalized = normalizeEnv(env);
-      expect(normalized).toEqual(env);
+      expect(normalized).toEqual({
+        normalizedEnv: env,
+        keyMap: {
+          PORT: "PORT",
+        },
+      });
+    });
+
+    it("should throw an error on key collision between prefixed and non-prefixed variables", () => {
+      const env = {
+        PORT: "3000",
+        VITE_PORT: "4000", // This will collide with PORT after normalization
+      };
+
+      expect(() => normalizeEnv(env, "VITE_")).toThrow(
+        "Environment variable collision: Normalized key 'PORT' from prefixed variable 'VITE_PORT' conflicts with existing non-prefixed variable 'PORT'. Please resolve this conflict."
+      );
     });
   });
 
@@ -82,6 +112,28 @@ describe("Environment Utilities", () => {
 
       expect(() => validateEnv(schema, env, {})).toThrow("process.exit called");
       expect(exitMock).toHaveBeenCalledWith(1);
+    });
+
+    it("should display original and normalized keys in error messages for prefixed variables", () => {
+      const env = {
+        VITE_PORT: "not-a-number",
+      };
+      const schema = {
+        PORT: z.coerce.number(),
+      };
+
+      const exitMock = vi.spyOn(process, "exit").mockImplementation(() => {
+        throw new Error("process.exit called");
+      });
+      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+      expect(() => validateEnv(schema, env, { prefix: "VITE_" })).toThrow(
+        "process.exit called"
+      );
+      expect(exitMock).toHaveBeenCalledWith(1);
+      expect(stripAnsi(consoleSpy.mock.calls[2][0])).toContain(
+        "1. VITE_PORT (as PORT) → Invalid input: expected number, received NaN"
+      );
     });
   });
 
