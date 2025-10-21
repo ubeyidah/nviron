@@ -22,15 +22,21 @@ class Logger {
     );
   }
 
-  issue(index: number, name: string, message: string) {
+  issue(index: number, name: string, message: string, originalKey?: string) {
     let reason = message;
 
     // Slightly smarter messaging:
     if (reason.includes("required")) reason = "Required but missing";
     if (reason.includes("Expected number")) reason = "Expected a number";
     if (reason.includes("Expected string")) reason = "Expected a string";
+
+    const keyDisplay =
+      originalKey && originalKey !== name
+        ? `${paint.cyan(paint.bold(originalKey))} (as ${paint.cyan(paint.bold(name))})`
+        : paint.cyan(paint.bold(name));
+
     console.log(
-      `${paint.gray(`${index}.`)} ${paint.cyan(paint.bold(name))} ${paint.red("→")} ${paint.red(reason)}`
+      `${paint.gray(`${index}.`)} ${keyDisplay} ${paint.red("→")} ${paint.red(reason)}`
     );
   }
 

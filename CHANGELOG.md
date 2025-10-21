@@ -2,6 +2,26 @@
 
 All notable changes to this project are documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.5](https://github.com/ubeyidah/nviron/compare/v2.1.4...v2.1.5) (2025-10-20)
+
+### 🛠 Build Fix
+
+- Rebuilt and republished the package to fix missing build output from v2.1.4.  
+  (No functional code changes — only ensures proper compiled files are included in the npm package.)
+
+## [2.1.4](https://github.com/ubeyidah/nviron/compare/v2.1.3...v2.1.4) (2025-10-20)
+
+### Fixes
+
+- **validateEnv:** Show both original and normalized environment variable keys in validation errors.  
+  Previously, only the normalized key (e.g., `PORT`) appeared, which caused confusion for prefixed variables such as `VITE_PORT`.  
+  Now the error output includes both keys for clearer debugging.
+
+### Internal Improvements
+
+- Updated `normalizeEnv` to return a mapping of normalized → original keys.
+- Updated `validateEnv` to use this mapping when reporting validation issues.
+
 ## [2.1.3](https://github.com/ubeyidah/nviron/compare/v2.1.2...v2.1.3) (2025-10-18)
 
 ### Features & Improvements
