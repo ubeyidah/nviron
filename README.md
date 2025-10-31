@@ -38,19 +38,19 @@ Install `nviron` and optionally `zod` (only if you need full Zod functionality o
 ## Using pnpm
 
 ```bash
-pnpm add nviron zod
+pnpm add nviron
 ```
 
 ## or npm
 
 ```bash
-npm install nviron zod
+npm install nviron
 ```
 
 ## or yarn
 
 ```bash
-yarn add nviron zod
+yarn add nviron
 ```
 
 nviron re-exports Zod as z, so for defining and validating environment variables you can do:
