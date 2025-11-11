@@ -139,7 +139,6 @@ For more examples, detailed configuration options, please refer to the <a href="
   - [ ] Environment file generation (`.env.example` creator)
   - [ ] Schema auto-generation from `.env` files
 
-See the [open issues](https://github.com/ubeyidah/nviron/issues) for a full list of proposed features (and known issues).
 
 ## 🤝 Contributing
 
