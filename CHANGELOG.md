@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.6](https://github.com/ubeyidah/nviron/compare/v2.1.5...v2.1.6) (2025-11-15)
+
+### 🛠 Build Fix
+
+- fix for vite apps to throw errors instead of process.exit
+
 ## [2.1.5](https://github.com/ubeyidah/nviron/compare/v2.1.4...v2.1.5) (2025-10-20)
 
 ### 🛠 Build Fix
