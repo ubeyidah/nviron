@@ -32,7 +32,7 @@ export const validateEnv = <T extends EnvSchema>(
     if(isNode){
       process.exit(1);
     } else{
-      throw new Error("Nviron: validation failed — missing or invalid variable(s) in your .env. Check the details above.")
+      throw new Error("Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.")
     }
   }
 
