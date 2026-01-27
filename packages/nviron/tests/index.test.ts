@@ -9,7 +9,7 @@ const stripAnsi = (str: string) =>
   str.replace(
     // eslint-disable-next-line no-control-regex
     /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-PRZcf-nqry=><]/g,
-    ""
+    "",
   );
 
 describe("Environment Utilities", () => {
@@ -56,7 +56,7 @@ describe("Environment Utilities", () => {
       };
 
       expect(() => normalizeEnv(env, "VITE_")).toThrow(
-        "Environment variable collision: Normalized key 'PORT' from prefixed variable 'VITE_PORT' conflicts with existing non-prefixed variable 'PORT'. Please resolve this conflict."
+        "Environment variable collision: Normalized key 'PORT' from prefixed variable 'VITE_PORT' conflicts with existing non-prefixed variable 'PORT'. Please resolve this conflict.",
       );
     });
   });
@@ -128,11 +128,11 @@ describe("Environment Utilities", () => {
       const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
       expect(() => validateEnv(schema, env, { prefix: "VITE_" })).toThrow(
-        "process.exit called"
+        "process.exit called",
       );
       expect(exitMock).toHaveBeenCalledWith(1);
       expect(stripAnsi(consoleSpy.mock.calls[2][0])).toContain(
-        "1. VITE_PORT (as PORT) → Invalid input: expected number, received NaN"
+        "1. VITE_PORT (as PORT) → Invalid input: expected number, received NaN",
       );
     });
   });

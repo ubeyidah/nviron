@@ -30,7 +30,7 @@ import { validateEnv } from "./validator";
 
 const defineEnv = <T extends EnvSchema>(
   schema: T,
-  config: EnvConfig = {}
+  config: EnvConfig = {},
 ): z.infer<z.ZodObject<T>> => {
   const source = config.source || process.env;
   return validateEnv(schema, source, config);

@@ -1,20 +1,23 @@
 {
   "extends": "@nviron/typescript-config/nextjs.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      // [!code ++]
+      "fumadocs-mdx:collections/*": [".source/*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
-    "next.config.js",
+    "next.config.mjs",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

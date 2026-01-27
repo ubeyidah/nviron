@@ -85,7 +85,7 @@ const envVite = defineEnv(
   {
     source: import.meta.env, // or any custom object
     prefix: "VITE_",
-  }
+  },
 );
 
 console.log(envVite.PORT); // Typed & validated

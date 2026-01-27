@@ -135,13 +135,13 @@ function SlidingNumber({
 
   const effectiveNumber = React.useMemo(
     () => (!isInView ? 0 : Math.abs(Number(number))),
-    [number, isInView]
+    [number, isInView],
   );
 
   const formatNumber = React.useCallback(
     (num: number) =>
       decimalPlaces != null ? num.toFixed(decimalPlaces) : num.toString(),
-    [decimalPlaces]
+    [decimalPlaces],
   );
 
   const numberStr = formatNumber(effectiveNumber);
@@ -177,18 +177,18 @@ function SlidingNumber({
   const intPlaces = React.useMemo(
     () =>
       Array.from({ length: intDigitCount }, (_, i) =>
-        Math.pow(10, intDigitCount - i - 1)
+        Math.pow(10, intDigitCount - i - 1),
       ),
-    [intDigitCount]
+    [intDigitCount],
   );
   const decPlaces = React.useMemo(
     () =>
       newDecStrRaw
         ? Array.from({ length: newDecStrRaw.length }, (_, i) =>
-            Math.pow(10, newDecStrRaw.length - i - 1)
+            Math.pow(10, newDecStrRaw.length - i - 1),
           )
         : [],
-    [newDecStrRaw]
+    [newDecStrRaw],
   );
 
   const newDecValue = newDecStrRaw ? parseInt(newDecStrRaw, 10) : 0;

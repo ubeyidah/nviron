@@ -1,0 +1,94 @@
+---
+title: Environments
+description: Separate configurations for different environments
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+## Development vs Production
+
+Separate configurations for different environments.
+
+<Tabs items={['Development', 'Production', 'Testing']}>
+  <Tab value="Development">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+    
+    export const env = defineEnv({
+      NODE_ENV: z.literal('development'),
+      
+      // Relaxed validation for development
+      DATABASE_URL: z.string().default('postgresql://localhost:5432/dev_db'),
+      PORT: z.coerce.number().default(3000),
+      
+      // Development-only features
+      DEBUG: z.coerce.boolean().default(true),
+      ENABLE_HOT_RELOAD: z.coerce.boolean().default(true),
+      MOCK_EXTERNAL_APIS: z.coerce.boolean().default(true),
+      
+      // Optional in development
+      REDIS_URL: z.string().url().optional(),
+      SMTP_HOST: z.string().optional(),
+    });
+    ```
+  </Tab>
+  <Tab value="Production">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+    
+    export const env = defineEnv({
+      NODE_ENV: z.literal('production'),
+      
+      // Strict validation for production
+      DATABASE_URL: z.string().url().startsWith('postgresql://'),
+      PORT: z.coerce.number().int().positive(),
+      
+      // Required in production
+      REDIS_URL: z.string().url(),
+      SMTP_HOST: z.string(),
+      SMTP_PORT: z.coerce.number(),
+      SMTP_USER: z.string().email(),
+      SMTP_PASSWORD: z.string().min(12),
+      
+      // Security
+      JWT_SECRET: z.string().min(32),
+      SESSION_SECRET: z.string().min(32),
+      ENCRYPTION_KEY: z.string().length(64),
+      
+      // Monitoring
+      SENTRY_DSN: z.string().url(),
+      NEW_RELIC_LICENSE_KEY: z.string().length(40),
+      
+      // Production-only
+      CDN_URL: z.string().url(),
+      RATE_LIMIT_STRICT: z.coerce.boolean().default(true),
+    });
+    ```
+  </Tab>
+  <Tab value="Testing">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+    
+    export const env = defineEnv({
+      NODE_ENV: z.literal('test'),
+      
+      // Test database
+      DATABASE_URL: z.string().default('postgresql://localhost:5432/test_db'),
+      
+      // Test configuration
+      PORT: z.coerce.number().default(0), // Random port
+      
+      // Override for tests
+      DISABLE_RATE_LIMITING: z.coerce.boolean().default(true),
+      MOCK_EXTERNAL_SERVICES: z.coerce.boolean().default(true),
+      
+      // Fast timeouts for tests
+      REQUEST_TIMEOUT: z.coerce.number().default(1000),
+      
+      // Optional in tests
+      REDIS_URL: z.string().url().optional(),
+      SMTP_HOST: z.string().optional(),
+    });
+    ```
+  </Tab>
+</Tabs>

@@ -1,0 +1,30 @@
+---
+title: Vite Installation
+description: Install and configure nviron with Vite
+---
+
+## Vite
+
+For Vite projects, use the `source` and `prefix` options:
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+    ENABLE_ANALYTICS: z.coerce.boolean(),
+  },
+  {
+    source: import.meta.env,
+    prefix: "VITE_",
+  },
+);
+```
+
+Your `.env` file:
+
+```bash title=".env"
+VITE_API_URL=https://api.example.com
+VITE_ENABLE_ANALYTICS=true
+```

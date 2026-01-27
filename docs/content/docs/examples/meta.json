@@ -1,0 +1,14 @@
+{
+  "title": "Examples",
+  "pages": [
+    "index",
+    "nextjs",
+    "vite",
+    "nodejs",
+    "microservices",
+    "saas",
+    "serverless",
+    "environments",
+    "advanced"
+  ]
+}

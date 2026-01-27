@@ -3,12 +3,12 @@ import { EnvSchema } from "../types/env-schema";
 import { Logger } from "../utils/logger";
 import { EnvConfig, EnvData } from "../types";
 import { normalizeEnv } from "../utils/utils";
-import {isNode} from "./../utils/detect-env"
+import { isNode } from "./../utils/detect-env";
 
 export const validateEnv = <T extends EnvSchema>(
   schema: T,
   envData: EnvData,
-  config: EnvConfig
+  config: EnvConfig,
 ): z.infer<ZodObject<T>> => {
   const { normalizedEnv, keyMap } = normalizeEnv(envData, config.prefix);
   const zodObject = z.object(schema);
@@ -29,10 +29,12 @@ export const validateEnv = <T extends EnvSchema>(
 
     logger.tip();
 
-    if(isNode){
+    if (isNode) {
       process.exit(1);
-    } else{
-      throw new Error("Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.")
+    } else {
+      throw new Error(
+        "Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.",
+      );
     }
   }
 

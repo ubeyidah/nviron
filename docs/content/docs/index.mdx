@@ -1,0 +1,115 @@
+---
+title: Introduction
+description: Type-safe environment variable management for modern JavaScript and TypeScript projects
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## What is Nviron?
+
+**Nviron** is a lightweight, type-safe e[nviron]ment variable management library built for modern JavaScript and TypeScript projects. It simplifies how you define, validate, and safely access environment variables using [Zod](https://zod.dev).
+
+Instead of manually checking `process.env` or writing repetitive validation logic, nviron provides a declarative, type-safe approach powered by Zod that ensures your application runs with confidence—no missing or invalid environment variables.
+
+## Key Features
+
+- **🔒 Type-Safe** - Full TypeScript support with automatic type inference from your Zod schemas
+- **✅ Runtime Validation** - Validates environment variables at startup using Zod schemas
+- **🎯 Zero Config** - Works out of the box with sensible defaults
+- **⚡ Framework Agnostic** - Compatible with Next.js, Vite, Node.js, and more
+- **🔍 Clear Error Messages** - Color-coded, developer-friendly error diagnostics
+- **📦 Lightweight** - Minimal dependencies, maximum functionality
+- **🔧 Flexible** - Support for custom sources and prefix stripping
+
+## Why Nviron?
+
+Managing environment variables shouldn't be complicated. Without proper validation, missing or misconfigured environment variables can cause runtime errors that are hard to debug.
+
+**Before Nviron:**
+
+```typescript
+// Manual validation, no type safety
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const dbUrl = process.env.DATABASE_URL;
+
+if (!dbUrl) {
+  throw new Error('DATABASE_URL is required');
+}
+
+if (!dbUrl.startsWith('postgresql://')) {
+  throw new Error('DATABASE_URL must be a valid PostgreSQL URL');
+}
+```
+
+**With Nviron:**
+
+```typescript
+import { defineEnv, z } from 'nviron';
+
+const env = defineEnv({
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+});
+
+// Fully typed and validated!
+console.log(env.PORT); // number
+console.log(env.DATABASE_URL); // string
+```
+
+<Callout type="info">
+Nviron re-exports Zod as `z`, so you can use it directly without installing Zod separately for basic environment variable validation.
+</Callout>
+
+## How It Works
+
+Nviron validates your environment variables at application startup:
+
+1. **Define** your environment schema using Zod
+2. **Validate** - Nviron checks all variables against your schema
+3. **Access** - Use fully typed, validated environment variables throughout your app
+
+If validation fails, nviron displays a clear, color-coded error message and exits gracefully, helping you catch configuration issues before they become runtime problems.
+
+## Quick Example
+
+```typescript
+import { defineEnv, z } from 'nviron';
+
+const env = defineEnv({
+  NODE_ENV: z.enum(['development', 'production', 'test']),
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+  API_KEY: z.string().min(32),
+  ENABLE_ANALYTICS: z.coerce.boolean().default(false),
+});
+
+// TypeScript knows the exact types!
+env.NODE_ENV; // "development" | "production" | "test"
+env.PORT; // number
+env.DATABASE_URL; // string
+env.API_KEY; // string
+env.ENABLE_ANALYTICS; // boolean
+```
+
+## Next Steps
+
+<Cards>
+  <Card 
+    href="/docs/installation" 
+    title="Installation"
+  >
+    Get started with nviron in minutes
+  </Card>
+  <Card 
+    href="/docs/quick-start" 
+    title="Quick Start"
+  >
+    Learn the basics with practical examples
+  </Card>
+  <Card 
+    href="/docs/api-reference" 
+    title="API Reference"
+  >
+    Explore all available options and types
+  </Card>
+</Cards>

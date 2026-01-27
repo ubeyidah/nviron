@@ -1,0 +1,99 @@
+---
+title: Installation
+description: Install nviron in your JavaScript or TypeScript project
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+
+## Prerequisites
+
+Before installing nviron, ensure you have:
+
+- **Node.js** 16.x or higher
+- A package manager: **npm**, **yarn**, **pnpm**, or **bun**
+
+## Install Nviron
+
+Choose your preferred package manager to install nviron:
+
+<Tabs items={["pnpm", "npm", "yarn", "bun"]}>
+  <Tab value="pnpm">```bash pnpm add nviron ```</Tab>
+  <Tab value="npm">```bash npm install nviron ```</Tab>
+  <Tab value="yarn">```bash yarn add nviron ```</Tab>
+  <Tab value="bun">```bash bun add nviron ```</Tab>
+</Tabs>
+
+<Callout type="info">
+  **Note:** Nviron re-exports Zod, so you don't need to install Zod separately
+  unless you need it for other purposes in your application.
+</Callout>
+
+## TypeScript Setup
+
+Nviron works seamlessly with TypeScript. If you're using TypeScript, no additional configuration is needed—types are included automatically.
+
+### tsconfig.json
+
+Ensure your `tsconfig.json` has the following settings for optimal compatibility:
+
+```json title="tsconfig.json"
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+## Verify Installation
+
+Create a simple test file to verify nviron is working correctly:
+
+```typescript title="test.ts"
+import { defineEnv, z } from "nviron";
+
+const env = defineEnv({
+  NODE_ENV: z.enum(["development", "production"]),
+});
+
+console.log("✅ Nviron is installed correctly!");
+console.log("Environment:", env.NODE_ENV);
+```
+
+Run the file:
+
+<Tabs items={["pnpm", "npm", "yarn", "bun"]}>
+  <Tab value="pnpm">```bash pnpm tsx test.ts ```</Tab>
+  <Tab value="npm">```bash npx tsx test.ts ```</Tab>
+  <Tab value="yarn">```bash yarn tsx test.ts ```</Tab>
+  <Tab value="bun">```bash bun test.ts ```</Tab>
+</Tabs>
+
+## Framework Guides
+
+Check out our framework-specific guides for detailed setup instructions:
+
+- [Next.js](/docs/installation/nextjs)
+- [Vite](/docs/installation/vite)
+- [Node.js / Express](/docs/installation/nodejs)
+
+## What's Next?
+
+Now that you've installed nviron, learn how to use it effectively:
+
+<Cards>
+  <Card href="/docs/quick-start" title="Quick Start">
+    Learn the basics with practical examples
+  </Card>
+  <Card href="/docs/core-concepts" title="Core Concepts">
+    Understand how nviron works
+  </Card>
+  <Card href="/docs/examples" title="Examples">
+    See real-world usage examples
+  </Card>
+</Cards>

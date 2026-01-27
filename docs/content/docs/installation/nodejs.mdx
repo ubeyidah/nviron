@@ -1,0 +1,30 @@
+---
+title: Node.js Installation
+description: Install and configure nviron with Node.js and Express
+---
+
+## Node.js / Express
+
+For Node.js applications:
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+  JWT_SECRET: z.string().min(32),
+  NODE_ENV: z.enum(["development", "production", "test"]),
+});
+```
+
+```typescript title="src/server.ts"
+import express from "express";
+import { env } from "./env";
+
+const app = express();
+
+app.listen(env.PORT, () => {
+  console.log(`Server running on port ${env.PORT}`);
+});
+```

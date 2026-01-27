@@ -1,0 +1,88 @@
+---
+title: Vite Example
+description: Setup for Vite applications with proper prefix handling
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+## Vite + React
+
+Setup for Vite applications with proper prefix handling.
+
+<Tabs items={['src/env.ts', 'src/main.tsx', '.env.example']}>
+  <Tab value="src/env.ts">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+    
+    export const env = defineEnv(
+      {
+        // API Configuration
+        API_URL: z.string().url(),
+        API_TIMEOUT: z.coerce.number().default(5000),
+        
+        // App Configuration
+        APP_NAME: z.string().default('My App'),
+        APP_VERSION: z.string().regex(/^\d+\.\d+\.\d+$/),
+        
+        // Feature Flags
+        ENABLE_ANALYTICS: z.coerce.boolean().default(false),
+        ENABLE_DEBUG: z.coerce.boolean().default(false),
+        
+        // External Services
+        SENTRY_DSN: z.string().url().optional(),
+        ANALYTICS_ID: z.string().optional(),
+        
+        // Environment
+        MODE: z.enum(['development', 'production', 'staging']),
+      },
+      {
+        source: import.meta.env,
+        prefix: 'VITE_',
+      }
+    );
+    ```
+  </Tab>
+  <Tab value="src/main.tsx">
+    ```typescript
+    import React from 'react';
+    import ReactDOM from 'react-dom/client';
+    import App from './App';
+    import { env } from './env';
+    
+    // Log environment info in development
+    if (env.MODE === 'development') {
+      console.log('🚀 App Name:', env.APP_NAME);
+      console.log('📦 Version:', env.APP_VERSION);
+      console.log('🔗 API URL:', env.API_URL);
+    }
+    
+    ReactDOM.createRoot(document.getElementById('root')!).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+    ```
+  </Tab>
+  <Tab value=".env.example">
+    ```bash
+    # API Configuration
+    VITE_API_URL=https://api.example.com
+    VITE_API_TIMEOUT=5000
+    
+    # App Configuration
+    VITE_APP_NAME=My Awesome App
+    VITE_APP_VERSION=1.0.0
+    
+    # Feature Flags
+    VITE_ENABLE_ANALYTICS=false
+    VITE_ENABLE_DEBUG=true
+    
+    # External Services
+    VITE_SENTRY_DSN=https://abc@sentry.io/123
+    VITE_ANALYTICS_ID=G-XXXXXXXXXX
+    
+    # Environment
+    VITE_MODE=development
+    ```
+  </Tab>
+</Tabs>

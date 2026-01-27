@@ -1,4 +1,3 @@
-
 <div align="center">
   <a href="https://github.com/ubeyidah/nviron">
     <img src="./docs/public/logo.png" alt="Logo" height="80">
@@ -90,7 +89,7 @@ const envVite = defineEnv(
   {
     source: import.meta.env, // or any custom object
     prefix: "VITE_",
-  }
+  },
 );
 
 console.log(envVite.PORT); // Typed & validated
@@ -138,7 +137,6 @@ For more examples, detailed configuration options, please refer to the <a href="
 - [ ] CLI tool
   - [ ] Environment file generation (`.env.example` creator)
   - [ ] Schema auto-generation from `.env` files
-
 
 ## 🤝 Contributing
 

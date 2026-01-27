@@ -1,0 +1,136 @@
+---
+title: Node.js Example
+description: Backend server configuration with comprehensive validation
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+## Express.js / Node.js
+
+Backend server configuration with comprehensive validation.
+
+<Tabs items={['src/env.ts', 'src/server.ts', '.env.example']}>
+  <Tab value="src/env.ts">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+    
+    export const env = defineEnv({
+      // Server Configuration
+      NODE_ENV: z.enum(['development', 'production', 'test']),
+      PORT: z.coerce.number().int().positive().default(3000),
+      HOST: z.string().default('0.0.0.0'),
+      
+      // Database
+      DATABASE_URL: z.string().url().startsWith('postgresql://'),
+      DATABASE_POOL_MIN: z.coerce.number().int().min(0).default(2),
+      DATABASE_POOL_MAX: z.coerce.number().int().min(1).default(10),
+      
+      // Redis
+      REDIS_HOST: z.string().default('localhost'),
+      REDIS_PORT: z.coerce.number().int().default(6379),
+      REDIS_PASSWORD: z.string().optional(),
+      
+      // Security
+      JWT_SECRET: z.string().min(32),
+      JWT_EXPIRES_IN: z.string().default('7d'),
+      SESSION_SECRET: z.string().min(32),
+      BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
+      
+      // CORS
+      CORS_ORIGIN: z.string().transform((val) => val.split(',')),
+      CORS_CREDENTIALS: z.coerce.boolean().default(true),
+      
+      // Rate Limiting
+      RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000), // 15 minutes
+      RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),
+      
+      // External APIs
+      SENDGRID_API_KEY: z.string().startsWith('SG.'),
+      AWS_ACCESS_KEY_ID: z.string().length(20),
+      AWS_SECRET_ACCESS_KEY: z.string().length(40),
+      AWS_REGION: z.string().default('us-east-1'),
+      AWS_S3_BUCKET: z.string(),
+      
+      // Logging
+      LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+      LOG_FORMAT: z.enum(['json', 'pretty']).default('json'),
+    });
+    ```
+  </Tab>
+  <Tab value="src/server.ts">
+    ```typescript
+    import express from 'express';
+    import cors from 'cors';
+    import { env } from './env';
+    
+    const app = express();
+    
+    // CORS configuration
+    app.use(cors({
+      origin: env.CORS_ORIGIN,
+      credentials: env.CORS_CREDENTIALS,
+    }));
+    
+    app.use(express.json());
+    
+    // Health check
+    app.get('/health', (req, res) => {
+      res.json({
+        status: 'ok',
+        environment: env.NODE_ENV,
+        timestamp: new Date().toISOString(),
+      });
+    });
+    
+    // Start server
+    app.listen(env.PORT, env.HOST, () => {
+      console.log(`🚀 Server running on ${env.HOST}:${env.PORT}`);
+      console.log(`📊 Environment: ${env.NODE_ENV}`);
+      console.log(`💾 Database: ${env.DATABASE_URL.split('@')[1]}`);
+    });
+    ```
+  </Tab>
+  <Tab value=".env.example">
+    ```bash
+    # Server
+    NODE_ENV=development
+    PORT=3000
+    HOST=0.0.0.0
+    
+    # Database
+    DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+    DATABASE_POOL_MIN=2
+    DATABASE_POOL_MAX=10
+    
+    # Redis
+    REDIS_HOST=localhost
+    REDIS_PORT=6379
+    REDIS_PASSWORD=
+    
+    # Security
+    JWT_SECRET=your-jwt-secret-min-32-characters-long
+    JWT_EXPIRES_IN=7d
+    SESSION_SECRET=your-session-secret-min-32-characters
+    BCRYPT_ROUNDS=12
+    
+    # CORS
+    CORS_ORIGIN=http://localhost:3000,http://localhost:5173
+    CORS_CREDENTIALS=true
+    
+    # Rate Limiting
+    RATE_LIMIT_WINDOW_MS=900000
+    RATE_LIMIT_MAX_REQUESTS=100
+    
+    # External APIs
+    SENDGRID_API_KEY=SG.your-sendgrid-api-key
+    AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+    AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    AWS_REGION=us-east-1
+    AWS_S3_BUCKET=my-s3-bucket
+    
+    # Logging
+    LOG_LEVEL=info
+    LOG_FORMAT=json
+    ```
+  </Tab>
+</Tabs>

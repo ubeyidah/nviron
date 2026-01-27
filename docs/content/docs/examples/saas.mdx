@@ -1,0 +1,46 @@
+---
+title: Multi-tenant SaaS
+description: Configuration for a multi-tenant application
+---
+
+## Multi-tenant SaaS Application
+
+Configuration for a multi-tenant application.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // Application
+  APP_NAME: z.string(),
+  APP_URL: z.string().url(),
+
+  // Multi-tenant Database
+  DATABASE_URL: z.string().url(),
+  TENANT_DATABASE_PREFIX: z.string().default("tenant_"),
+  MAX_TENANTS_PER_DB: z.coerce.number().int().default(100),
+
+  // Tenant Isolation
+  TENANT_ID_HEADER: z.string().default("x-tenant-id"),
+  SUBDOMAIN_ROUTING: z.coerce.boolean().default(true),
+
+  // Subscription & Billing
+  STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
+  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
+  TRIAL_PERIOD_DAYS: z.coerce.number().int().default(14),
+
+  // Feature Flags per Plan
+  FREE_PLAN_MAX_USERS: z.coerce.number().int().default(5),
+  PRO_PLAN_MAX_USERS: z.coerce.number().int().default(50),
+  ENTERPRISE_PLAN_MAX_USERS: z.coerce.number().int().default(10000),
+
+  // Storage per Tenant
+  S3_BUCKET_PREFIX: z.string().default("tenant-"),
+  MAX_STORAGE_PER_TENANT_GB: z.coerce.number().int().default(10),
+
+  // Rate Limiting per Tenant
+  RATE_LIMIT_FREE_TIER: z.coerce.number().int().default(100),
+  RATE_LIMIT_PRO_TIER: z.coerce.number().int().default(1000),
+  RATE_LIMIT_ENTERPRISE_TIER: z.coerce.number().int().default(10000),
+});
+```
