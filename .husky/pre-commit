@@ -1,0 +1,3 @@
+echo "🔎 Nviron: running fast pre-commit checks (lint + typecheck)"
+pnpm lint-staged
+echo "✅ Nviron: pre-commit checks passed"
