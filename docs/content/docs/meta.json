@@ -1,0 +1,15 @@
+{
+  "title": "Nviron Documentation",
+  "pages": [
+    "index",
+    "installation",
+    "quick-start",
+    "core-concepts",
+    "api-reference",
+    "examples",
+    "best-practices",
+    "troubleshooting",
+    "migration-guid",
+    "faq"
+  ]
+}

@@ -1,0 +1,657 @@
+---
+title: Troubleshooting
+description: Common issues and solutions when using nviron
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+## Common Errors
+
+### Validation Errors
+
+#### String Expected, Received Undefined
+
+**Error Message:**
+
+```bash
+❌ Environment Variable Missing or Invalid
+
+1. DATABASE_URL → Expected string, received undefined
+```
+
+**Cause:** The environment variable is not defined in your `.env` file or environment.
+
+**Solution:**
+
+1. Check your `.env` file exists and contains the variable:
+
+   ```bash
+   DATABASE_URL=postgresql://localhost:5432/mydb
+   ```
+
+2. Ensure you're loading environment variables correctly:
+
+   ```bash
+   # If using dotenv
+   node -r dotenv/config src/index.js
+   ```
+
+3. For Next.js, restart your development server after adding new variables
+
+4. Verify the variable name matches exactly (case-sensitive):
+
+   ```typescript
+   // Schema expects DATABASE_URL
+   DATABASE_URL: z.string().url()
+
+   // .env must have DATABASE_URL, not database_url
+   DATABASE_URL=postgresql://...
+   ```
+
+#### Expected Number, Received String
+
+**Error Message:**
+
+```bash
+❌ Environment Variable Missing or Invalid
+
+1. PORT → Expected number, received string
+```
+
+**Cause:** Using `z.number()` instead of `z.coerce.number()`.
+
+**Solution:**
+
+Environment variables are always strings. Use coercion:
+
+```typescript
+// ❌ Wrong
+const env = defineEnv({
+  PORT: z.number(),
+});
+
+// ✅ Correct
+const env = defineEnv({
+  PORT: z.coerce.number(),
+});
+```
+
+#### Invalid URL
+
+**Error Message:**
+
+```bash
+❌ Environment Variable Missing or Invalid
+
+1. DATABASE_URL → Invalid url
+```
+
+**Cause:** The value is not a valid URL format.
+
+**Solution:**
+
+Ensure the URL is properly formatted:
+
+```bash
+# ❌ Wrong
+DATABASE_URL=localhost:5432/mydb
+
+# ✅ Correct
+DATABASE_URL=postgresql://localhost:5432/mydb
+```
+
+Common URL issues:
+
+- Missing protocol (`http://`, `https://`, `postgresql://`)
+- Invalid characters or spaces
+- Incorrect port format
+- Missing slashes
+
+#### String Must Contain at Least X Characters
+
+**Error Message:**
+
+```bash
+❌ Environment Variable Missing or Invalid
+
+1. JWT_SECRET → String must contain at least 32 character(s)
+```
+
+**Cause:** The value doesn't meet the minimum length requirement.
+
+**Solution:**
+
+Generate a proper secret:
+
+```bash
+# Generate a secure 32+ character secret
+openssl rand -base64 32
+
+# Or use a password generator
+# Ensure it's at least 32 characters
+```
+
+Update your `.env`:
+
+```bash
+JWT_SECRET=your-generated-secret-here-min-32-chars
+```
+
+### TypeScript Errors
+
+#### Cannot Find Module 'nviron'
+
+**Error Message:**
+
+```
+Cannot find module 'nviron' or its corresponding type declarations.
+```
+
+**Solution:**
+
+1. Ensure nviron is installed:
+
+   ```bash
+   npm install nviron
+   ```
+
+2. Check your `package.json` includes nviron:
+
+   ```json
+   {
+     "dependencies": {
+       "nviron": "^1.0.0"
+     }
+   }
+   ```
+
+3. Restart your TypeScript server in your IDE
+
+#### Type 'X' is Not Assignable to Type 'Y'
+
+**Error Message:**
+
+```typescript
+Type 'string | undefined' is not assignable to type 'string'.
+```
+
+**Cause:** Using an optional value where a required value is expected.
+
+**Solution:**
+
+1. Handle the optional case:
+
+   ```typescript
+   const env = defineEnv({
+     REDIS_URL: z.string().url().optional(),
+   });
+
+   // ❌ Wrong: Might be undefined
+   const client = createClient(env.REDIS_URL);
+
+   // ✅ Correct: Handle undefined
+   const client = env.REDIS_URL ? createClient(env.REDIS_URL) : null;
+   ```
+
+2. Or use a default value:
+
+   ```typescript
+   const env = defineEnv({
+     REDIS_URL: z.string().url().default("redis://localhost:6379"),
+   });
+
+   // Now env.REDIS_URL is always a string
+   const client = createClient(env.REDIS_URL);
+   ```
+
+### Framework-Specific Issues
+
+#### Next.js: Environment Variables Not Available
+
+**Problem:** Environment variables work in development but not in production.
+
+**Solution:**
+
+1. For client-side variables, use the `NEXT_PUBLIC_` prefix:
+
+   ```bash
+   # Client-side
+   NEXT_PUBLIC_API_URL=https://api.example.com
+
+   # Server-side only
+   DATABASE_URL=postgresql://...
+   ```
+
+2. Validate environment at build time in `next.config.mjs`:
+
+   ```javascript
+   import "./src/env.ts";
+
+   /** @type {import('next').NextConfig} */
+   const nextConfig = {};
+
+   export default nextConfig;
+   ```
+
+3. For Vercel deployment, add environment variables in project settings
+
+#### Vite: import.meta.env is Undefined
+
+**Problem:** Using `import.meta.env` in Node.js context.
+
+**Solution:**
+
+Only use `import.meta.env` in Vite/browser code:
+
+```typescript
+// ✅ Correct: In Vite project
+const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+  },
+  {
+    source: import.meta.env,
+    prefix: "VITE_",
+  },
+);
+```
+
+For server-side Vite (SSR):
+
+```typescript
+// Use process.env for server-side
+const env = defineEnv({
+  DATABASE_URL: z.string().url(),
+});
+```
+
+#### Express: process.env Variables Not Loading
+
+**Problem:** Variables in `.env` file not being loaded.
+
+**Solution:**
+
+1. Install dotenv:
+
+   ```bash
+   npm install dotenv
+   ```
+
+2. Load environment variables early:
+
+   ```typescript
+   import "dotenv/config"; // Must be first import
+   import { env } from "./env";
+   import express from "express";
+   ```
+
+3. Or use the `-r` flag:
+
+   ```bash
+   node -r dotenv/config src/index.js
+   ```
+
+## Prefix Issues
+
+### Variables Not Found with Prefix
+
+**Problem:** Using prefix but variables still not found.
+
+**Solution:**
+
+Ensure your `.env` file uses the prefix:
+
+```typescript
+// env.ts
+const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+  },
+  {
+    prefix: "VITE_",
+  },
+);
+```
+
+```bash
+# .env - Must include prefix
+VITE_API_URL=https://api.example.com
+
+# ❌ Wrong - No prefix
+API_URL=https://api.example.com
+```
+
+### Prefix Not Being Stripped
+
+**Problem:** Accessing variables with prefix instead of without.
+
+**Cause:** Misunderstanding how prefix works.
+
+**Explanation:**
+
+Nviron automatically strips the prefix:
+
+```typescript
+const env = defineEnv(
+  {
+    API_URL: z.string().url(), // Schema key without prefix
+  },
+  {
+    prefix: "VITE_",
+  },
+);
+
+// Access WITHOUT prefix
+console.log(env.API_URL); // ✅ Correct
+console.log(env.VITE_API_URL); // ❌ Wrong - doesn't exist
+```
+
+## Coercion Issues
+
+### Boolean Coercion Not Working
+
+**Problem:** Boolean values not being converted properly.
+
+**Solution:**
+
+Understand valid boolean string values:
+
+```bash
+# ✅ These work
+ENABLE_FEATURE=true
+ENABLE_FEATURE=false
+ENABLE_FEATURE=1
+ENABLE_FEATURE=0
+ENABLE_FEATURE=yes
+ENABLE_FEATURE=no
+
+# ❌ These don't work
+ENABLE_FEATURE=enabled  # Not a valid boolean string
+ENABLE_FEATURE=TRUE     # Case sensitive
+```
+
+Use in schema:
+
+```typescript
+const env = defineEnv({
+  ENABLE_FEATURE: z.coerce.boolean(),
+});
+```
+
+### Number Coercion Failing
+
+**Problem:** Number conversion fails with valid-looking numbers.
+
+**Cause:** Invalid number format or special characters.
+
+**Solution:**
+
+```bash
+# ✅ Valid
+PORT=3000
+MAX_SIZE=1000000
+
+# ❌ Invalid
+PORT=3,000        # No commas
+PORT=3000px       # No units
+PORT=three        # Must be numeric
+PORT=3.0.0        # Not a valid number
+```
+
+### Date Coercion Issues
+
+**Problem:** Date coercion not working as expected.
+
+**Solution:**
+
+Use ISO 8601 date format:
+
+```bash
+# ✅ Valid formats
+CREATED_AT=2024-01-15
+CREATED_AT=2024-01-15T10:30:00Z
+CREATED_AT=2024-01-15T10:30:00+00:00
+
+# ❌ Invalid formats
+CREATED_AT=15/01/2024
+CREATED_AT=Jan 15 2024
+CREATED_AT=1642247400  # Use z.coerce.number() then transform
+```
+
+## Validation Issues
+
+### Custom Validation Not Working
+
+**Problem:** Refinement rules not being applied.
+
+**Solution:**
+
+Ensure you're using `.refine()` correctly:
+
+```typescript
+// ✅ Correct
+const env = defineEnv({
+  DATABASE_URL: z
+    .string()
+    .url()
+    .refine((url) => url.startsWith("postgresql://"), {
+      message: "Must be a PostgreSQL URL",
+    }),
+});
+
+// ❌ Wrong - refine returns undefined
+const env = defineEnv({
+  DATABASE_URL: z
+    .string()
+    .url()
+    .refine(
+      (url) => url.startsWith("postgresql://"), // Missing return
+    ),
+});
+```
+
+### Transform Not Applied
+
+**Problem:** Transformed values not working as expected.
+
+**Solution:**
+
+Understand transform order:
+
+```typescript
+const env = defineEnv({
+  // Transforms happen after validation
+  ALLOWED_ORIGINS: z
+    .string()
+    .min(1) // Validates first
+    .transform((val) => val.split(",")) // Then transforms
+    .refine((arr) => arr.length > 0, {
+      // Then refines
+      message: "At least one origin required",
+    }),
+});
+```
+
+## Performance Issues
+
+### Slow Application Startup
+
+**Problem:** Application takes too long to start.
+
+**Cause:** Complex validations or too many environment variables.
+
+**Solution:**
+
+1. Simplify validation rules:
+
+   ```typescript
+   // ❌ Slow: Complex regex
+   API_KEY: z.string().regex(/^[A-Za-z0-9_-]{32,256}$/);
+
+   // ✅ Faster: Simple length check
+   API_KEY: z.string().min(32).max(256);
+   ```
+
+2. Use a singleton pattern:
+
+   ```typescript
+   // env.ts - Created once
+   export const env = defineEnv({ ... });
+   ```
+
+### Memory Usage
+
+**Problem:** High memory usage from environment validation.
+
+**Solution:**
+
+Ensure you're not creating multiple instances:
+
+```typescript
+// ❌ Wrong: New instance every import
+export function getEnv() {
+  return defineEnv({ ... });
+}
+
+// ✅ Correct: Single instance
+export const env = defineEnv({ ... });
+```
+
+## Development vs Production
+
+### Works in Development, Fails in Production
+
+**Problem:** Validation passes locally but fails in production.
+
+**Causes & Solutions:**
+
+1. **Missing environment variables**
+   - Add all required variables to your production environment
+   - Use your hosting provider's environment variable settings
+
+2. **Different defaults**
+
+   ```typescript
+   // Make critical values required
+   const env = defineEnv({
+     DATABASE_URL: z.string().url(), // No default
+     JWT_SECRET: z.string().min(32), // No default
+   });
+   ```
+
+3. **Case sensitivity**
+
+   ```bash
+   # Development (Windows - case insensitive)
+   database_url=postgresql://...
+
+   # Production (Linux - case sensitive)
+   DATABASE_URL=postgresql://...  # Must match exactly
+   ```
+
+### Production Builds Failing
+
+**Problem:** Build fails during CI/CD.
+
+**Solution:**
+
+1. Set environment variables in CI/CD:
+
+   ```yaml
+   # GitHub Actions example
+   env:
+     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+     JWT_SECRET: ${{ secrets.JWT_SECRET }}
+   ```
+
+2. Use build-time validation for Next.js:
+
+   ```javascript
+   // next.config.mjs
+   import "./src/env.ts"; // Validates during build
+   ```
+
+3. Provide test values for CI:
+
+   ```bash
+   # .env.ci
+   DATABASE_URL=postgresql://test:test@localhost:5432/test
+   JWT_SECRET=test-secret-for-ci-only-32-chars
+   ```
+
+## Debugging
+
+### Enable Debug Mode
+
+See what's happening during validation:
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// Temporarily log values for debugging
+const schema = {
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+};
+
+console.log("Environment source:", process.env);
+console.log("Schema keys:", Object.keys(schema));
+
+const env = defineEnv(schema);
+console.log("Validated env:", env);
+```
+
+### Check Environment Loading
+
+Verify environment variables are being loaded:
+
+```typescript
+// Check if .env is loaded
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("All env vars:", Object.keys(process.env));
+
+// Check specific variable
+console.log("DATABASE_URL exists:", "DATABASE_URL" in process.env);
+console.log("DATABASE_URL value:", process.env.DATABASE_URL);
+```
+
+### Validate Step by Step
+
+Debug validation by testing individual variables:
+
+```typescript
+import { z } from "nviron";
+
+// Test individual validations
+try {
+  z.coerce.number().parse(process.env.PORT);
+  console.log("✅ PORT is valid");
+} catch (error) {
+  console.error("❌ PORT validation failed:", error);
+}
+
+try {
+  z.string().url().parse(process.env.DATABASE_URL);
+  console.log("✅ DATABASE_URL is valid");
+} catch (error) {
+  console.error("❌ DATABASE_URL validation failed:", error);
+}
+```
+
+## Getting Help
+
+If you're still experiencing issues:
+
+1. **Check the documentation** - Review relevant sections
+2. **Search existing issues** - Someone may have had the same problem
+3. **Create a minimal reproduction** - Isolate the issue
+4. **Open an issue** - Provide:
+   - Environment (Node version, framework, OS)
+   - Minimal code example
+   - Error message
+   - Expected vs actual behavior
+
+<Callout type="info">
+  For more help, visit the [GitHub
+  Issues](https://github.com/your-username/nviron/issues) page.
+</Callout>

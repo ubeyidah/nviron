@@ -117,6 +117,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   .bg-gradient {
     @apply bg-gradient-to-l from-transparent via-red-800/15 to-transparent;
   }

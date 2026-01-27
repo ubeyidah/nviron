@@ -1,0 +1,358 @@
+---
+title: Quick Start
+description: Get up and running with nviron in minutes
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+
+## Your First Environment Configuration
+
+This guide will walk you through creating your first nviron configuration in just a few minutes.
+
+<Steps>
+<Step>
+### Install Nviron
+
+```bash
+npm install nviron
+```
+</Step>
+
+<Step>
+### Create Environment Variables
+
+Create a `.env` file in your project root:
+
+```bash title=".env"
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=postgresql://localhost:5432/mydb
+API_KEY=my-secret-key-1234567890123456
+ENABLE_ANALYTICS=true
+```
+
+<Callout type="warn">
+**Important:** Add `.env` to your `.gitignore` to prevent committing sensitive data:
+
+```bash title=".gitignore"
+.env
+.env.local
+```
+</Callout>
+</Step>
+
+<Step>
+### Define Your Schema
+
+Create an `env.ts` file to define and validate your environment variables:
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from 'nviron';
+
+export const env = defineEnv({
+  NODE_ENV: z.enum(['development', 'production', 'test']),
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+  API_KEY: z.string().min(32),
+  ENABLE_ANALYTICS: z.coerce.boolean().default(false),
+});
+```
+</Step>
+
+<Step>
+### Use Your Environment Variables
+
+Import and use the validated environment variables anywhere in your application:
+
+```typescript title="src/index.ts"
+import { env } from './env';
+
+console.log('Environment:', env.NODE_ENV);
+console.log('Server Port:', env.PORT);
+console.log('Database:', env.DATABASE_URL);
+console.log('Analytics:', env.ENABLE_ANALYTICS);
+
+// TypeScript knows the exact types!
+env.PORT; // type: number
+env.NODE_ENV; // type: "development" | "production" | "test"
+env.ENABLE_ANALYTICS; // type: boolean
+```
+</Step>
+</Steps>
+
+## Understanding the Schema
+
+Let's break down what each validation does:
+
+```typescript
+import { defineEnv, z } from 'nviron';
+
+const env = defineEnv({
+  // Ensures NODE_ENV is exactly one of these values
+  NODE_ENV: z.enum(['development', 'production', 'test']),
+  
+  // Converts string to number, with a default fallback
+  PORT: z.coerce.number().default(3000),
+  
+  // Validates it's a properly formatted URL
+  DATABASE_URL: z.string().url(),
+  
+  // Ensures API key is at least 32 characters
+  API_KEY: z.string().min(32),
+  
+  // Converts string 'true'/'false' to boolean
+  ENABLE_ANALYTICS: z.coerce.boolean().default(false),
+});
+```
+
+<Callout type="info">
+**Zod Coercion:** Use `z.coerce` to automatically convert string values to the desired type. This is essential because environment variables are always strings initially.
+</Callout>
+
+## Handling Validation Errors
+
+When an environment variable is missing or invalid, nviron displays a clear error message:
+
+```bash title="Terminal Output"
+❌ Environment Variable Missing or Invalid
+
+2 issues found in your environment configuration.
+
+1. API_KEY → String must contain at least 32 character(s)
+2. DATABASE_URL → Invalid url
+
+💡 Check your .env file or environment variables before starting the server.
+```
+
+The process will exit with an error code, preventing your application from starting with invalid configuration.
+
+## Common Validation Patterns
+
+### Optional Variables
+
+```typescript
+const env = defineEnv({
+  // Optional with no default
+  OPTIONAL_KEY: z.string().optional(),
+  
+  // Optional with default value
+  MAX_CONNECTIONS: z.coerce.number().default(10),
+});
+```
+
+### URL Validation
+
+```typescript
+const env = defineEnv({
+  API_URL: z.string().url(),
+  WEBSOCKET_URL: z.string().url().startsWith('wss://'),
+  CALLBACK_URL: z.string().url().includes('/callback'),
+});
+```
+
+### String Validation
+
+```typescript
+const env = defineEnv({
+  // Minimum length
+  PASSWORD: z.string().min(8),
+  
+  // Maximum length
+  USERNAME: z.string().max(50),
+  
+  // Email validation
+  ADMIN_EMAIL: z.string().email(),
+  
+  // Regex pattern
+  API_VERSION: z.string().regex(/^v\d+$/),
+});
+```
+
+### Number Validation
+
+```typescript
+const env = defineEnv({
+  // Positive number
+  PORT: z.coerce.number().positive(),
+  
+  // Range validation
+  TIMEOUT: z.coerce.number().min(1000).max(30000),
+  
+  // Integer only
+  MAX_RETRIES: z.coerce.number().int(),
+});
+```
+
+### Boolean Validation
+
+```typescript
+const env = defineEnv({
+  // Accepts: "true", "false", "1", "0", "yes", "no"
+  ENABLE_FEATURE: z.coerce.boolean(),
+  
+  // With default
+  DEBUG: z.coerce.boolean().default(false),
+});
+```
+
+### Custom Validation
+
+```typescript
+const env = defineEnv({
+  // Custom refinement
+  DATABASE_URL: z.string().url().refine(
+    (url) => url.startsWith('postgresql://'),
+    { message: 'Database URL must be PostgreSQL' }
+  ),
+  
+  // Transform value
+  ALLOWED_ORIGINS: z.string().transform((val) => val.split(',')),
+});
+```
+
+## Framework-Specific Examples
+
+### Next.js App Router
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from 'nviron';
+
+export const env = defineEnv({
+  // Server-side only
+  DATABASE_URL: z.string().url(),
+  API_SECRET: z.string().min(32),
+  
+  // Client-side (NEXT_PUBLIC_ prefix)
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  NEXT_PUBLIC_SITE_NAME: z.string(),
+});
+```
+
+```typescript title="next.config.mjs"
+// Validate env at build time
+import './src/env.ts';
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+export default nextConfig;
+```
+
+### Vite / React
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from 'nviron';
+
+export const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+    APP_TITLE: z.string(),
+    ANALYTICS_ID: z.string().optional(),
+  },
+  {
+    source: import.meta.env,
+    prefix: 'VITE_',
+  }
+);
+```
+
+```bash title=".env"
+VITE_API_URL=https://api.example.com
+VITE_APP_TITLE=My App
+VITE_ANALYTICS_ID=G-XXXXXXXXXX
+```
+
+### Express / Node.js
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from 'nviron';
+
+export const env = defineEnv({
+  NODE_ENV: z.enum(['development', 'production', 'test']),
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+  REDIS_URL: z.string().url(),
+  JWT_SECRET: z.string().min(32),
+  SESSION_SECRET: z.string().min(32),
+  CORS_ORIGIN: z.string().url(),
+});
+```
+
+```typescript title="src/server.ts"
+import express from 'express';
+import { env } from './env';
+
+const app = express();
+
+// Use validated environment variables
+app.listen(env.PORT, () => {
+  console.log(`🚀 Server running on port ${env.PORT}`);
+  console.log(`📊 Environment: ${env.NODE_ENV}`);
+});
+```
+
+## Testing with Different Environments
+
+### Development vs Production
+
+<Tabs items={['.env.development', '.env.production']}>
+  <Tab value=".env.development">
+    ```bash title=".env.development"
+    NODE_ENV=development
+    PORT=3000
+    DATABASE_URL=postgresql://localhost:5432/mydb_dev
+    DEBUG=true
+    LOG_LEVEL=debug
+    ```
+  </Tab>
+  <Tab value=".env.production">
+    ```bash title=".env.production"
+    NODE_ENV=production
+    PORT=8080
+    DATABASE_URL=postgresql://prod-db.example.com:5432/mydb
+    DEBUG=false
+    LOG_LEVEL=error
+    ```
+  </Tab>
+</Tabs>
+
+### Testing Environment
+
+```typescript title="src/env.test.ts"
+import { defineEnv, z } from 'nviron';
+
+// Override source for testing
+const testEnv = defineEnv(
+  {
+    DATABASE_URL: z.string().url(),
+    API_KEY: z.string(),
+  },
+  {
+    source: {
+      DATABASE_URL: 'postgresql://localhost:5432/test_db',
+      API_KEY: 'test-key-for-testing-only-12345',
+    },
+  }
+);
+
+console.log(testEnv.DATABASE_URL); // Uses test values
+```
+
+## What's Next?
+
+<Cards>
+  <Card href="/docs/core-concepts" title="Core Concepts">
+    Deep dive into how nviron works
+  </Card>
+  <Card href="/docs/api-reference" title="API Reference">
+    Complete API documentation
+  </Card>
+  <Card href="/docs/examples" title="Examples">
+    More real-world examples
+  </Card>
+  <Card href="/docs/best-practices" title="Best Practices">
+    Learn the recommended patterns
+  </Card>
+</Cards>

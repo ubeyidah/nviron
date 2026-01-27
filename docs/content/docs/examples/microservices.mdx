@@ -1,0 +1,40 @@
+---
+title: Microservices
+description: Environment configuration for microservice architecture
+---
+
+## Microservices Architecture
+
+Environment configuration for a microservice.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // Service Identity
+  SERVICE_NAME: z.string().default("user-service"),
+  SERVICE_VERSION: z.string().regex(/^\d+\.\d+\.\d+$/),
+  SERVICE_PORT: z.coerce.number().int().positive(),
+
+  // Service Discovery
+  CONSUL_HOST: z.string().default("localhost"),
+  CONSUL_PORT: z.coerce.number().int().default(8500),
+
+  // Message Queue
+  RABBITMQ_URL: z.string().url().startsWith("amqp://"),
+  RABBITMQ_QUEUE: z.string(),
+  RABBITMQ_EXCHANGE: z.string(),
+
+  // Database
+  DATABASE_URL: z.string().url(),
+  DATABASE_READ_REPLICA_URL: z.string().url().optional(),
+
+  // Distributed Tracing
+  JAEGER_AGENT_HOST: z.string().default("localhost"),
+  JAEGER_AGENT_PORT: z.coerce.number().int().default(6831),
+
+  // Health Checks
+  HEALTH_CHECK_INTERVAL: z.coerce.number().int().default(30000),
+  READINESS_TIMEOUT: z.coerce.number().int().default(5000),
+});
+```

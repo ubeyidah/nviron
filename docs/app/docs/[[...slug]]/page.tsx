@@ -22,7 +22,7 @@ export default async function Page({
   const MDX = (page.data as any).body;
 
   return (
-    <DocsPage toc={(page.data as any).toc} full={(page.data as any).full}>
+    <DocsPage tableOfContent={{ enabled: true, single: true, style: "clerk" }} toc={(page.data as any).toc} full={(page.data as any).full}>
       <DocsTitle>{(page.data as any).title}</DocsTitle>
       <DocsDescription>{(page.data as any).description}</DocsDescription>
       <DocsBody>

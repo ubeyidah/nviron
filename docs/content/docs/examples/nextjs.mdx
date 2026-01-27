@@ -1,0 +1,90 @@
+---
+title: Next.js Example
+description: Complete Next.js setup with server and client environment variables
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+## Next.js App Router
+
+Complete Next.js setup with server and client environment variables.
+
+<Tabs items={['src/env.ts', 'next.config.mjs', '.env.example']}>
+  <Tab value="src/env.ts">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+    
+    export const env = defineEnv({
+      // Server-side only
+      NODE_ENV: z.enum(['development', 'production', 'test']),
+      DATABASE_URL: z.string().url().startsWith('postgresql://'),
+      DATABASE_POOL_SIZE: z.coerce.number().int().min(1).max(100).default(10),
+      REDIS_URL: z.string().url().optional(),
+      
+      // Authentication
+      NEXTAUTH_SECRET: z.string().min(32),
+      NEXTAUTH_URL: z.string().url(),
+      
+      // External APIs (server-side)
+      OPENAI_API_KEY: z.string().min(20),
+      STRIPE_SECRET_KEY: z.string().startsWith('sk_'),
+      
+      // Email
+      SMTP_HOST: z.string(),
+      SMTP_PORT: z.coerce.number().int(),
+      SMTP_USER: z.string().email(),
+      SMTP_PASSWORD: z.string().min(8),
+      
+      // Client-side (NEXT_PUBLIC_ prefix)
+      NEXT_PUBLIC_APP_URL: z.string().url(),
+      NEXT_PUBLIC_API_URL: z.string().url(),
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith('pk_'),
+      NEXT_PUBLIC_ANALYTICS_ID: z.string().optional(),
+    });
+    ```
+  </Tab>
+  <Tab value="next.config.mjs">
+    ```javascript
+    // Validate environment variables at build time
+    import './src/env.ts';
+    
+    /** @type {import('next').NextConfig} */
+    const nextConfig = {
+      // Your Next.js config here
+    };
+    
+    export default nextConfig;
+    ```
+  </Tab>
+  <Tab value=".env.example">
+    ```bash
+    # Node Environment
+    NODE_ENV=development
+    
+    # Database
+    DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+    DATABASE_POOL_SIZE=10
+    REDIS_URL=redis://localhost:6379
+    
+    # Authentication
+    NEXTAUTH_SECRET=your-nextauth-secret-min-32-chars
+    NEXTAUTH_URL=http://localhost:3000
+    
+    # External APIs
+    OPENAI_API_KEY=sk-your-openai-api-key
+    STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+    
+    # Email
+    SMTP_HOST=smtp.gmail.com
+    SMTP_PORT=587
+    SMTP_USER=your-email@gmail.com
+    SMTP_PASSWORD=your-app-password
+    
+    # Public (Client-side)
+    NEXT_PUBLIC_APP_URL=http://localhost:3000
+    NEXT_PUBLIC_API_URL=http://localhost:3000/api
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_public_key
+    NEXT_PUBLIC_ANALYTICS_ID=G-XXXXXXXXXX
+    ```
+  </Tab>
+</Tabs>

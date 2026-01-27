@@ -1,0 +1,42 @@
+---
+title: Serverless
+description: Environment configuration for AWS Lambda or serverless functions
+---
+
+## Serverless / Lambda Function
+
+Environment configuration for AWS Lambda or serverless functions.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // AWS Lambda Environment
+  AWS_REGION: z.string().default("us-east-1"),
+  AWS_EXECUTION_ENV: z.string().optional(),
+  AWS_LAMBDA_FUNCTION_NAME: z.string().optional(),
+  AWS_LAMBDA_FUNCTION_VERSION: z.string().optional(),
+
+  // Function Configuration
+  FUNCTION_TIMEOUT: z.coerce.number().int().max(900).default(30),
+  FUNCTION_MEMORY: z.coerce.number().int().default(1024),
+
+  // Database (with connection pooling)
+  DATABASE_URL: z.string().url(),
+  DATABASE_MIN_CONNECTIONS: z.coerce.number().int().default(1),
+  DATABASE_MAX_CONNECTIONS: z.coerce.number().int().default(2),
+
+  // External Services
+  API_GATEWAY_URL: z.string().url(),
+  SQS_QUEUE_URL: z.string().url(),
+  SNS_TOPIC_ARN: z.string().startsWith("arn:aws:sns:"),
+
+  // Secrets
+  SECRET_NAME: z.string(),
+  SECRETS_MANAGER_REGION: z.string().default("us-east-1"),
+
+  // Observability
+  ENABLE_XRAY: z.coerce.boolean().default(true),
+  LOG_LEVEL: z.enum(["DEBUG", "INFO", "WARN", "ERROR"]).default("INFO"),
+});
+```

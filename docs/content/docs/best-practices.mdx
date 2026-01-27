@@ -1,0 +1,634 @@
+---
+title: Best Practices
+description: Recommended patterns and practices for using nviron effectively
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+## Project Structure
+
+### Centralized Configuration
+
+Keep all environment configuration in a single, well-organized file.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+// ✅ Good: Centralized, organized schema
+export const env = defineEnv({
+  // Application
+  NODE_ENV: z.enum(["development", "production", "test"]),
+  PORT: z.coerce.number().default(3000),
+
+  // Database
+  DATABASE_URL: z.string().url(),
+  DATABASE_POOL_SIZE: z.coerce.number().default(10),
+
+  // Security
+  JWT_SECRET: z.string().min(32),
+  SESSION_SECRET: z.string().min(32),
+});
+```
+
+```typescript title="src/server.ts"
+// ❌ Bad: Scattered validation
+const port = parseInt(process.env.PORT || "3000");
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) throw new Error("DATABASE_URL required");
+```
+
+### Early Validation
+
+Import and validate environment variables as early as possible to catch configuration errors at startup.
+
+```typescript title="src/index.ts"
+// ✅ Good: Validate first
+import { env } from "./env"; // Validates immediately
+
+import express from "express";
+import { connectDatabase } from "./database";
+
+const app = express();
+// Now safely use validated env
+app.listen(env.PORT);
+```
+
+```typescript title="src/index.ts"
+// ❌ Bad: Late validation
+import express from "express";
+
+const app = express();
+
+// Error might only occur when this code runs
+app.listen(process.env.PORT); // What if PORT is invalid?
+```
+
+## Schema Design
+
+### Use Specific Validation
+
+Be as specific as possible with your validation rules to catch errors early.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// ✅ Good: Specific validation
+export const env = defineEnv({
+  PORT: z.coerce.number().int().positive().max(65535),
+  DATABASE_URL: z.string().url().startsWith("postgresql://"),
+  EMAIL: z.string().email(),
+  API_KEY: z.string().min(32).max(256),
+});
+
+// ❌ Bad: Generic validation
+export const env = defineEnv({
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string(),
+  EMAIL: z.string(),
+  API_KEY: z.string(),
+});
+```
+
+### Provide Sensible Defaults
+
+Use defaults for non-critical values to improve developer experience.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// ✅ Good: Defaults for common values
+export const env = defineEnv({
+  PORT: z.coerce.number().default(3000),
+  HOST: z.string().default("localhost"),
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+  ENABLE_CACHE: z.coerce.boolean().default(true),
+
+  // Still require critical values
+  DATABASE_URL: z.string().url(),
+  JWT_SECRET: z.string().min(32),
+});
+
+// ❌ Bad: No defaults even for common values
+export const env = defineEnv({
+  PORT: z.coerce.number(), // Requires PORT in .env
+  HOST: z.string(), // Requires HOST in .env
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]),
+});
+```
+
+### Document Your Schema
+
+Add comments to explain the purpose and requirements of each variable.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  /**
+   * PostgreSQL database connection string
+   * Format: postgresql://user:password@host:port/database
+   * Example: postgresql://admin:secret@localhost:5432/myapp
+   */
+  DATABASE_URL: z.string().url().startsWith("postgresql://"),
+
+  /**
+   * JWT secret for signing authentication tokens
+   * Must be at least 32 characters
+   * Generate with: openssl rand -base64 32
+   */
+  JWT_SECRET: z.string().min(32),
+
+  /**
+   * Server port number
+   * Valid range: 1-65535
+   * Default: 3000
+   */
+  PORT: z.coerce.number().int().positive().max(65535).default(3000),
+});
+```
+
+## Environment Files
+
+### Use .env.example
+
+Always provide a `.env.example` file with documentation.
+
+```bash title=".env.example"
+# Application Configuration
+NODE_ENV=development
+PORT=3000
+
+# Database
+# PostgreSQL connection string
+# Format: postgresql://user:password@host:port/database
+DATABASE_URL=postgresql://user:password@localhost:5432/myapp
+DATABASE_POOL_SIZE=10
+
+# Security
+# Generate with: openssl rand -base64 32
+JWT_SECRET=your-secret-key-here-min-32-characters
+SESSION_SECRET=your-session-secret-here-min-32-chars
+
+# External Services
+# Optional in development
+REDIS_URL=redis://localhost:6379
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+
+# Feature Flags
+ENABLE_ANALYTICS=false
+ENABLE_DEBUG_MODE=true
+```
+
+### Never Commit .env Files
+
+Always add `.env` files to `.gitignore`.
+
+```bash title=".gitignore"
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Keep example files
+!.env.example
+```
+
+<Callout type="warn">
+  **Security Warning:** Never commit actual `.env` files with real secrets to
+  version control.
+</Callout>
+
+### Environment-Specific Files
+
+Use different `.env` files for different environments.
+
+```
+project/
+├── .env.example          # Template with documentation
+├── .env.development      # Development settings
+├── .env.production       # Production settings (not in git)
+├── .env.test            # Test settings
+└── .env.local           # Local overrides (not in git)
+```
+
+## Type Safety
+
+### Export Types
+
+Export and reuse environment types throughout your application.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+import type { ValidatedEnv } from "nviron";
+
+const schema = {
+  DATABASE_URL: z.string().url(),
+  PORT: z.coerce.number(),
+  NODE_ENV: z.enum(["development", "production", "test"]),
+} as const;
+
+export type Env = ValidatedEnv<typeof schema>;
+export const env = defineEnv(schema);
+```
+
+```typescript title="src/database.ts"
+import type { Env } from "./env";
+
+export function createDatabaseClient(env: Env) {
+  // env.DATABASE_URL is properly typed as string
+  // env.PORT is properly typed as number
+  return connectToDatabase(env.DATABASE_URL);
+}
+```
+
+### Avoid Type Assertions
+
+Let TypeScript infer types from your schema.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const env = defineEnv({
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+});
+
+// ✅ Good: Use inferred types
+const port: number = env.PORT;
+const dbUrl: string = env.DATABASE_URL;
+
+// ❌ Bad: Type assertions defeat the purpose
+const port = env.PORT as number;
+const dbUrl = env.DATABASE_URL as string;
+```
+
+## Security
+
+### Validate Secrets
+
+Ensure secrets meet minimum security requirements.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // Minimum length requirements
+  JWT_SECRET: z.string().min(32),
+  SESSION_SECRET: z.string().min(32),
+  ENCRYPTION_KEY: z.string().length(64),
+
+  // Format validation
+  API_KEY: z.string().regex(/^[A-Za-z0-9_-]{32,}$/),
+
+  // Provider-specific validation
+  STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
+  SENDGRID_API_KEY: z.string().startsWith("SG."),
+
+  // Prevent common mistakes
+  DATABASE_URL: z
+    .string()
+    .url()
+    .refine((url) => !url.includes("password=password"), {
+      message: 'Do not use "password" as your database password',
+    }),
+});
+```
+
+### Environment-Specific Requirements
+
+Enforce stricter rules in production.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+export const env = defineEnv({
+  NODE_ENV: z.enum(["development", "production", "test"]),
+
+  // Optional in development, required in production
+  SENTRY_DSN: isProduction ? z.string().url() : z.string().url().optional(),
+
+  // Strict validation in production
+  DATABASE_URL: z
+    .string()
+    .url()
+    .refine(
+      (url) => {
+        if (isProduction && url.includes("localhost")) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: "Cannot use localhost database in production",
+      },
+    ),
+});
+```
+
+### Sanitize Error Messages
+
+Be careful about exposing secrets in error messages.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// ✅ Good: Validation doesn't expose values
+export const env = defineEnv({
+  API_KEY: z.string().min(32, "API key must be at least 32 characters"),
+});
+
+// The error message will be:
+// "API_KEY → API key must be at least 32 characters"
+// Not: "API_KEY → sk_live_51abc123... must be at least 32 characters"
+```
+
+## Performance
+
+### Singleton Pattern
+
+Create a single instance of your environment configuration.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+// ✅ Good: Single instance
+export const env = defineEnv({
+  DATABASE_URL: z.string().url(),
+  PORT: z.coerce.number(),
+});
+```
+
+```typescript title="src/database.ts"
+// ✅ Good: Import the singleton
+import { env } from "./env";
+
+export function connect() {
+  return createClient(env.DATABASE_URL);
+}
+```
+
+```typescript title="src/server.ts"
+// ❌ Bad: Creating multiple instances
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  DATABASE_URL: z.string().url(),
+  PORT: z.coerce.number(),
+});
+```
+
+### Validate Once at Startup
+
+Don't re-validate environment variables during runtime.
+
+```typescript
+// ✅ Good: Validate once at import
+import { env } from "./env";
+
+export function startServer() {
+  // Use pre-validated env
+  server.listen(env.PORT);
+}
+```
+
+```typescript
+// ❌ Bad: Re-validating on every call
+export function getPort() {
+  return defineEnv({ PORT: z.coerce.number() }).PORT;
+}
+```
+
+## Testing
+
+### Mock Environment for Tests
+
+Use custom sources for testing without modifying actual environment.
+
+```typescript title="src/env.test.ts"
+import { defineEnv, z } from "nviron";
+
+// Test-specific configuration
+export const testEnv = defineEnv(
+  {
+    DATABASE_URL: z.string().url(),
+    PORT: z.coerce.number(),
+  },
+  {
+    source: {
+      DATABASE_URL: "postgresql://localhost:5432/test_db",
+      PORT: "0", // Random port for tests
+    },
+  },
+);
+```
+
+### Environment File for Tests
+
+Use a dedicated `.env.test` file.
+
+```bash title=".env.test"
+# Test environment
+NODE_ENV=test
+DATABASE_URL=postgresql://localhost:5432/test_db
+PORT=0
+
+# Fast timeouts for tests
+REQUEST_TIMEOUT=1000
+DB_QUERY_TIMEOUT=500
+
+# Disable external services
+MOCK_EXTERNAL_APIS=true
+DISABLE_RATE_LIMITING=true
+
+# Test-specific
+TEST_USER_EMAIL=test@example.com
+TEST_USER_PASSWORD=test-password-12345
+```
+
+### Test Environment Validation
+
+Write tests for your environment configuration.
+
+```typescript title="src/env.test.ts"
+import { defineEnv, z } from "nviron";
+import { describe, it, expect } from "vitest";
+
+describe("Environment Configuration", () => {
+  it("should validate correct environment", () => {
+    expect(() => {
+      defineEnv(
+        {
+          PORT: z.coerce.number(),
+          DATABASE_URL: z.string().url(),
+        },
+        {
+          source: {
+            PORT: "3000",
+            DATABASE_URL: "postgresql://localhost:5432/db",
+          },
+        },
+      );
+    }).not.toThrow();
+  });
+
+  it("should reject invalid port", () => {
+    expect(() => {
+      defineEnv(
+        {
+          PORT: z.coerce.number().positive(),
+        },
+        {
+          source: {
+            PORT: "-1",
+          },
+        },
+      );
+    }).toThrow();
+  });
+
+  it("should reject invalid URL", () => {
+    expect(() => {
+      defineEnv(
+        {
+          DATABASE_URL: z.string().url(),
+        },
+        {
+          source: {
+            DATABASE_URL: "not-a-url",
+          },
+        },
+      );
+    }).toThrow();
+  });
+});
+```
+
+## Framework-Specific Best Practices
+
+### Next.js
+
+Validate environment at build time.
+
+```typescript title="next.config.mjs"
+// ✅ Good: Validate at build time
+import "./src/env.ts";
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+export default nextConfig;
+```
+
+Separate server and client variables.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // Server-only (never sent to client)
+  DATABASE_URL: z.string().url(),
+  API_SECRET: z.string().min(32),
+
+  // Client-exposed (NEXT_PUBLIC_ prefix)
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  NEXT_PUBLIC_APP_NAME: z.string(),
+});
+```
+
+### Vite
+
+Always use prefix for Vite projects.
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+// ✅ Good: Specify prefix
+export const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+  },
+  {
+    source: import.meta.env,
+    prefix: "VITE_",
+  },
+);
+```
+
+## Common Pitfalls
+
+### Forgetting Coercion
+
+```typescript
+// ❌ Wrong: Expects actual number
+const env = defineEnv({
+  PORT: z.number(), // Will fail! process.env.PORT is "3000", not 3000
+});
+
+// ✅ Correct: Coerces string to number
+const env = defineEnv({
+  PORT: z.coerce.number(),
+});
+```
+
+### Overusing Optional
+
+```typescript
+// ❌ Bad: Too many optionals
+const env = defineEnv({
+  DATABASE_URL: z.string().url().optional(),
+  JWT_SECRET: z.string().optional(),
+  API_KEY: z.string().optional(),
+});
+
+// ✅ Good: Only truly optional values
+const env = defineEnv({
+  DATABASE_URL: z.string().url(), // Required
+  JWT_SECRET: z.string().min(32), // Required
+  CACHE_URL: z.string().url().optional(), // Truly optional
+});
+```
+
+### Not Using Defaults Wisely
+
+```typescript
+// ❌ Bad: Defaults for everything
+const env = defineEnv({
+  DATABASE_URL: z.string().url().default("postgresql://localhost:5432/db"),
+  JWT_SECRET: z.string().default("insecure-default-secret"),
+});
+
+// ✅ Good: Defaults only for safe values
+const env = defineEnv({
+  DATABASE_URL: z.string().url(), // Force explicit configuration
+  JWT_SECRET: z.string().min(32), // Force explicit configuration
+  PORT: z.coerce.number().default(3000), // Safe default
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+});
+```
+
+## Checklist
+
+Use this checklist when setting up nviron in your project:
+
+- [ ] Create centralized `env.ts` file
+- [ ] Validate environment early in application lifecycle
+- [ ] Use specific validation rules for each variable
+- [ ] Provide sensible defaults for non-critical values
+- [ ] Document schema with comments
+- [ ] Create `.env.example` with documentation
+- [ ] Add `.env` to `.gitignore`
+- [ ] Export types for reuse across application
+- [ ] Validate secrets meet minimum requirements
+- [ ] Use `z.coerce` for type conversion
+- [ ] Test environment configuration
+- [ ] Set up environment-specific files (dev, prod, test)
+- [ ] Configure framework-specific settings (Next.js, Vite, etc.)
+- [ ] Review and remove unused environment variables
+
+<Callout type="info">
+  Following these best practices will help you build more robust, maintainable,
+  and secure applications with nviron.
+</Callout>

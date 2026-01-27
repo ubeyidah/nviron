@@ -1,0 +1,47 @@
+---
+title: Next.js Installation
+description: Install and configure nviron with Next.js
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+## Next.js
+
+Nviron works perfectly with Next.js. Create your environment configuration in a separate file:
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  DATABASE_URL: z.string().url(),
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  NODE_ENV: z.enum(["development", "production", "test"]),
+});
+```
+
+Import and use in your app:
+
+```typescript title="src/app/page.tsx"
+import { env } from '@/env';
+
+export default function Home() {
+  // env is fully typed!
+  console.log(env.NODE_ENV);
+  return <div>Hello World</div>;
+}
+```
+
+<Callout type="warn">
+For Next.js, make sure to import your `env` file in `next.config.js` to validate environment variables at build time:
+
+```javascript title="next.config.js"
+// Validate env on build
+import "./src/env.ts";
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+export default nextConfig;
+```
+
+</Callout>

@@ -4,7 +4,8 @@ export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: "Nviron",
-      url: "/"
+      url: "/",
     },
+    githubUrl: "https://github.com/ubeyidah/nviron",
   };
 }

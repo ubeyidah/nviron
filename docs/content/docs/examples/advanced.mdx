@@ -1,0 +1,132 @@
+---
+title: Advanced Patterns
+description: Custom transformations, complex validation, and more
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+## Advanced Patterns
+
+### Custom Transformations
+
+Transform environment variables during validation.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const env = defineEnv({
+  // Split comma-separated list
+  ALLOWED_ORIGINS: z
+    .string()
+    .transform((val) => val.split(","))
+    .refine((origins) => origins.length > 0, {
+      message: "At least one origin is required",
+    }),
+
+  // Parse JSON
+  FEATURE_FLAGS: z
+    .string()
+    .transform((val) => JSON.parse(val))
+    .pipe(z.record(z.boolean())),
+
+  // Convert to uppercase
+  ENVIRONMENT: z.string().transform((val) => val.toUpperCase()),
+
+  // Parse range
+  ALLOWED_PORTS: z
+    .string()
+    .transform((val) => val.split("-").map(Number))
+    .refine((ports) => ports.length === 2 && ports[0] < ports[1], {
+      message: "Invalid port range",
+    }),
+});
+
+// Usage:
+console.log(env.ALLOWED_ORIGINS); // ['http://localhost:3000', 'https://app.com']
+console.log(env.FEATURE_FLAGS); // { analytics: true, beta: false }
+console.log(env.ENVIRONMENT); // 'PRODUCTION'
+console.log(env.ALLOWED_PORTS); // [3000, 4000]
+```
+
+### Complex Validation
+
+Advanced validation patterns with custom rules.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const env = defineEnv({
+  // URL with specific requirements
+  DATABASE_URL: z
+    .string()
+    .url()
+    .refine((url) => url.startsWith("postgresql://"), {
+      message: "Database must be PostgreSQL",
+    })
+    .refine(
+      (url) =>
+        !url.includes("localhost") || process.env.NODE_ENV === "development",
+      {
+        message: "Localhost database not allowed in production",
+      },
+    ),
+
+  // Conditional validation
+  SMTP_HOST: z.string().refine(
+    (host) => {
+      const nodeEnv = process.env.NODE_ENV;
+      if (nodeEnv === "production") {
+        return host.length > 0;
+      }
+      return true;
+    },
+    {
+      message: "SMTP_HOST is required in production",
+    },
+  ),
+
+  // Cross-field validation
+  MIN_POOL_SIZE: z.coerce.number().int(),
+  MAX_POOL_SIZE: z.coerce.number().int(),
+}).refine((data) => data.MIN_POOL_SIZE < data.MAX_POOL_SIZE, {
+  message: "MIN_POOL_SIZE must be less than MAX_POOL_SIZE",
+  path: ["MAX_POOL_SIZE"],
+});
+```
+
+### Environment-Specific Schemas
+
+Different schemas for different environments.
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const baseSchema = {
+  NODE_ENV: z.enum(["development", "production", "test"]),
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+};
+
+const developmentSchema = {
+  ...baseSchema,
+  DEBUG: z.coerce.boolean().default(true),
+  MOCK_APIS: z.coerce.boolean().default(true),
+};
+
+const productionSchema = {
+  ...baseSchema,
+  SENTRY_DSN: z.string().url(),
+  NEW_RELIC_KEY: z.string(),
+  CDN_URL: z.string().url(),
+};
+
+const isProduction = process.env.NODE_ENV === "production";
+
+export const env = defineEnv(
+  isProduction ? productionSchema : developmentSchema,
+);
+```
+
+<Callout type="info">
+  For more examples, check out the [Best Practices](/docs/best-practices) guide.
+</Callout>

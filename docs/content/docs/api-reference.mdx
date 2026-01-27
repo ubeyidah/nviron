@@ -1,0 +1,526 @@
+---
+title: API Reference
+description: Complete API documentation for nviron
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+
+## Functions
+
+### defineEnv()
+
+The main function for defining and validating environment variables.
+
+```typescript
+function defineEnv<T extends EnvSchema>(
+  schema: T,
+  config?: EnvConfig,
+): ValidatedEnv<T>;
+```
+
+#### Parameters
+
+**schema** (required)
+
+- Type: `EnvSchema` (Record of Zod schemas)
+- Description: An object where keys are environment variable names and values are Zod schemas
+
+**config** (optional)
+
+- Type: `EnvConfig`
+- Description: Configuration options for environment validation
+
+#### Returns
+
+Returns a validated environment object with TypeScript types inferred from your schema.
+
+#### Example
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const env = defineEnv({
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+});
+
+// env is typed as:
+// {
+//   PORT: number;
+//   DATABASE_URL: string;
+// }
+```
+
+## Configuration Options
+
+### EnvConfig
+
+Configuration object for customizing environment validation behavior.
+
+```typescript
+interface EnvConfig {
+  source?: EnvData;
+  prefix?: string;
+}
+```
+
+#### source
+
+Custom environment source object.
+
+- Type: `EnvData` (Record&lt;string, string | undefined&gt;)
+- Default: `process.env`
+- Description: Override the default environment source
+
+**Example:**
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// Use Vite's import.meta.env
+const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+  },
+  {
+    source: import.meta.env,
+  },
+);
+
+// Use custom object
+const customEnv = defineEnv(
+  {
+    API_KEY: z.string(),
+  },
+  {
+    source: {
+      API_KEY: "custom-value",
+    },
+  },
+);
+```
+
+#### prefix
+
+Prefix to strip from environment variable names.
+
+- Type: `string`
+- Default: `undefined`
+- Description: Automatically removes specified prefix from environment variable names before validation
+
+**Example:**
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// With Vite prefix
+const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+    APP_NAME: z.string(),
+  },
+  {
+    source: import.meta.env,
+    prefix: "VITE_",
+  },
+);
+
+// Looks for VITE_API_URL and VITE_APP_NAME
+// But you access them as env.API_URL and env.APP_NAME
+```
+
+<Callout type="info">
+  **Prefix Normalization:** When using a prefix, nviron automatically strips it
+  before validation. For example, with `prefix: "VITE_"`, the variable
+  `VITE_PORT` becomes `PORT` in your schema.
+</Callout>
+
+## Types
+
+### EnvSchema
+
+The shape of your environment schema definition.
+
+```typescript
+type EnvSchema = Record<string, ZodType<any, any, any>>;
+```
+
+**Example:**
+
+```typescript
+import { z } from "nviron";
+import type { EnvSchema } from "nviron";
+
+const mySchema: EnvSchema = {
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+  NODE_ENV: z.enum(["development", "production"]),
+};
+```
+
+### ValidatedEnv
+
+The inferred type of the validated environment object.
+
+```typescript
+type ValidatedEnv<T extends EnvSchema> = {
+  [K in keyof T]: z.infer<T[K]>;
+};
+```
+
+**Example:**
+
+```typescript
+import { defineEnv, z } from "nviron";
+import type { ValidatedEnv, EnvSchema } from "nviron";
+
+const schema = {
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+} satisfies EnvSchema;
+
+type Env = ValidatedEnv<typeof schema>;
+// {
+//   PORT: number;
+//   DATABASE_URL: string;
+// }
+
+const env: Env = defineEnv(schema);
+```
+
+### EnvData
+
+The type for environment source objects.
+
+```typescript
+type EnvData = Record<string, string | undefined>;
+```
+
+**Example:**
+
+```typescript
+import type { EnvData } from "nviron";
+
+const customSource: EnvData = {
+  API_URL: "https://api.example.com",
+  API_KEY: "secret-key",
+  TIMEOUT: "5000",
+};
+```
+
+### EnvConfig
+
+Configuration object interface.
+
+```typescript
+interface EnvConfig {
+  source?: EnvData;
+  prefix?: string;
+}
+```
+
+## Zod Re-export
+
+Nviron re-exports Zod's `z` object for convenience.
+
+```typescript
+import { z } from "nviron";
+
+// Equivalent to:
+// import { z } from 'zod';
+```
+
+### Available Zod Types
+
+All Zod types and methods are available through nviron's re-export:
+
+#### Primitives
+
+```typescript
+import { z } from "nviron";
+
+z.string(); // string
+z.number(); // number
+z.boolean(); // boolean
+z.bigint(); // bigint
+z.date(); // Date
+z.undefined(); // undefined
+z.null(); // null
+z.any(); // any
+z.unknown(); // unknown
+z.never(); // never
+z.void(); // void
+```
+
+#### Strings
+
+```typescript
+z.string().min(5); // Min length
+z.string().max(10); // Max length
+z.string().length(5); // Exact length
+z.string().email(); // Email validation
+z.string().url(); // URL validation
+z.string().uuid(); // UUID validation
+z.string().regex(/^[A-Z]+$/); // Regex pattern
+z.string().startsWith("https"); // Starts with
+z.string().endsWith(".com"); // Ends with
+z.string().includes("api"); // Contains
+```
+
+#### Numbers
+
+```typescript
+z.number().min(0); // Minimum value
+z.number().max(100); // Maximum value
+z.number().int(); // Integer only
+z.number().positive(); // Positive numbers
+z.number().nonnegative(); // Non-negative
+z.number().negative(); // Negative numbers
+z.number().nonpositive(); // Non-positive
+z.number().multipleOf(5); // Multiple of value
+z.number().finite(); // Finite numbers
+z.number().safe(); // Safe integers
+```
+
+#### Coercion
+
+```typescript
+z.coerce.string(); // Convert to string
+z.coerce.number(); // Convert to number
+z.coerce.boolean(); // Convert to boolean
+z.coerce.date(); // Convert to Date
+z.coerce.bigint(); // Convert to bigint
+```
+
+#### Enums
+
+```typescript
+z.enum(["development", "production", "test"]);
+z.nativeEnum(MyEnum);
+```
+
+#### Optionals & Defaults
+
+```typescript
+z.string().optional(); // string | undefined
+z.string().nullable(); // string | null
+z.string().nullish(); // string | null | undefined
+z.string().default("default"); // string (with default)
+z.string().optional().default(""); // string (optional with default)
+```
+
+#### Objects
+
+```typescript
+z.object({
+  name: z.string(),
+  age: z.number(),
+});
+```
+
+#### Arrays
+
+```typescript
+z.array(z.string()); // string[]
+z.array(z.number()).min(1); // Non-empty array
+z.array(z.string()).max(10); // Max 10 items
+```
+
+#### Unions
+
+```typescript
+z.union([z.string(), z.number()]); // string | number
+z.string().or(z.number()); // string | number
+```
+
+#### Transforms
+
+```typescript
+z.string().transform((val) => val.toUpperCase());
+z.string().transform((val) => val.split(","));
+```
+
+#### Refinements
+
+```typescript
+z.string().refine((val) => val.length > 5, {
+  message: "String must be longer than 5 characters",
+});
+
+z.number().refine((val) => val % 2 === 0, {
+  message: "Number must be even",
+});
+```
+
+## Error Handling
+
+When validation fails, nviron formats errors in a user-friendly way and exits the process.
+
+### Error Output Format
+
+```bash
+❌ Environment Variable Missing or Invalid
+
+3 issues found in your environment configuration.
+
+1. PORT → Expected number, received string
+2. DATABASE_URL → Invalid url
+3. API_KEY → String must contain at least 32 character(s)
+
+💡 Check your .env file or environment variables before starting the server.
+```
+
+### Validation Errors
+
+Validation errors occur when:
+
+1. **Missing Required Variables**: A required environment variable is not defined
+2. **Type Mismatch**: The value doesn't match the expected type
+3. **Validation Failure**: Custom validation rules fail (min/max, regex, etc.)
+
+**Example:**
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// This will fail if PORT is not a valid number
+const env = defineEnv({
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+});
+```
+
+### Exit Behavior
+
+By default, nviron exits the process when validation fails:
+
+- Exit code: `1`
+- Prevents application from running with invalid configuration
+- Displays colored error messages in the console
+
+<Callout type="warn">
+  **Production Behavior:** In production environments, ensure all environment
+  variables are properly configured to avoid startup failures.
+</Callout>
+
+## Complete Example
+
+Here's a comprehensive example using all available options:
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+import type { EnvSchema, ValidatedEnv } from "nviron";
+
+// Define schema with type
+const envSchema = {
+  // Node environment
+  NODE_ENV: z.enum(["development", "production", "test"]),
+
+  // Server configuration
+  PORT: z.coerce.number().int().positive().default(3000),
+  HOST: z.string().default("localhost"),
+
+  // Database
+  DATABASE_URL: z.string().url().startsWith("postgresql://"),
+  DATABASE_POOL_SIZE: z.coerce.number().int().min(1).max(100).default(10),
+
+  // API Keys
+  API_KEY: z.string().min(32),
+  API_SECRET: z.string().min(32),
+
+  // External Services
+  REDIS_URL: z.string().url().optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().optional(),
+
+  // Feature Flags
+  ENABLE_ANALYTICS: z.coerce.boolean().default(false),
+  ENABLE_CACHE: z.coerce.boolean().default(true),
+  ENABLE_LOGGING: z.coerce.boolean().default(true),
+
+  // Security
+  JWT_SECRET: z.string().min(32),
+  SESSION_SECRET: z.string().min(32),
+  CORS_ORIGIN: z.string().url(),
+
+  // Custom validation
+  ALLOWED_HOSTS: z
+    .string()
+    .transform((val) => val.split(","))
+    .refine((hosts) => hosts.length > 0, {
+      message: "At least one allowed host is required",
+    }),
+
+  // Optional with transform
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
+} satisfies EnvSchema;
+
+// Export type
+export type Env = ValidatedEnv<typeof envSchema>;
+
+// Export validated env
+export const env = defineEnv(envSchema);
+```
+
+## Advanced Usage
+
+### Custom Source Object
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const config = {
+  API_URL: "https://api.example.com",
+  API_KEY: "secret-key",
+  TIMEOUT: "5000",
+};
+
+const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+    API_KEY: z.string(),
+    TIMEOUT: z.coerce.number(),
+  },
+  { source: config },
+);
+```
+
+### Multiple Environment Configs
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+// Server environment
+export const serverEnv = defineEnv({
+  DATABASE_URL: z.string().url(),
+  REDIS_URL: z.string().url(),
+  JWT_SECRET: z.string().min(32),
+});
+
+// Client environment (Next.js example)
+export const clientEnv = defineEnv({
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  NEXT_PUBLIC_SITE_NAME: z.string(),
+});
+```
+
+### Type-Safe Environment Variables
+
+```typescript
+import { defineEnv, z } from "nviron";
+import type { ValidatedEnv } from "nviron";
+
+const schema = {
+  PORT: z.coerce.number(),
+  DATABASE_URL: z.string().url(),
+} as const;
+
+type Env = ValidatedEnv<typeof schema>;
+
+const env: Env = defineEnv(schema);
+
+// TypeScript knows the exact types
+env.PORT; // number
+env.DATABASE_URL; // string
+```

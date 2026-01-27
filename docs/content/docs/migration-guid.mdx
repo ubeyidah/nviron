@@ -1,0 +1,597 @@
+---
+title: Migration Guide
+description: Migrate from other environment variable solutions to nviron
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+
+## Migrating from Manual Validation
+
+### From process.env
+
+If you're currently using `process.env` directly with manual validation:
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+    ```typescript
+    // Scattered validation throughout codebase
+    const port = parseInt(process.env.PORT || '3000');
+
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      throw new Error('DATABASE_URL is required');
+    }
+    if (!dbUrl.startsWith('postgresql://')) {
+      throw new Error('DATABASE_URL must be PostgreSQL');
+    }
+    
+    const nodeEnv = process.env.NODE_ENV;
+    if (!['development', 'production', 'test'].includes(nodeEnv || '')) {
+      throw new Error('Invalid NODE_ENV');
+    }
+    
+    const enableCache = process.env.ENABLE_CACHE === 'true';
+    ```
+  </Tab>
+  <Tab value="After">
+    ```typescript
+    // Centralized validation with nviron
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      PORT: z.coerce.number().default(3000),
+      DATABASE_URL: z.string().url().startsWith('postgresql://'),
+      NODE_ENV: z.enum(['development', 'production', 'test']),
+      ENABLE_CACHE: z.coerce.boolean(),
+    });
+    
+    // Use anywhere with full type safety
+    console.log(env.PORT); // number
+    console.log(env.DATABASE_URL); // string
+    console.log(env.NODE_ENV); // "development" | "production" | "test"
+    console.log(env.ENABLE_CACHE); // boolean
+    ```
+  </Tab>
+</Tabs>
+
+### Migration Steps
+
+<Steps>
+<Step>
+### Create env.ts
+
+Create a centralized environment configuration file:
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // Add your environment variables here
+});
+```
+
+</Step>
+
+<Step>
+### Convert Validations
+
+Convert your existing validation logic to Zod schemas:
+
+```typescript
+// Before: Manual validation
+const apiKey = process.env.API_KEY;
+if (!apiKey || apiKey.length < 32) {
+  throw new Error("API_KEY must be at least 32 characters");
+}
+
+// After: Zod schema
+API_KEY: z.string().min(32);
+```
+
+</Step>
+
+<Step>
+### Replace process.env
+
+Replace all `process.env` usage with imported `env`:
+
+```typescript
+// Before
+const port = parseInt(process.env.PORT || "3000");
+
+// After
+import { env } from "./env";
+const port = env.PORT;
+```
+
+</Step>
+
+<Step>
+### Test Thoroughly
+
+Run your application and ensure all environment variables are properly validated.
+
+</Step>
+</Steps>
+
+## Migrating from dotenv-safe
+
+<Tabs items={['Before (dotenv-safe)', 'After (nviron)']}>
+  <Tab value="Before (dotenv-safe)">
+    ```javascript
+    require('dotenv-safe').config({
+      example: '.env.example',
+    });
+
+    // Type-unsafe usage
+    const port = parseInt(process.env.PORT);
+    const dbUrl = process.env.DATABASE_URL;
+    ```
+  </Tab>
+  <Tab value="After (nviron)">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      PORT: z.coerce.number(),
+      DATABASE_URL: z.string().url(),
+    });
+    
+    // Fully typed
+    const port = env.PORT; // number
+    const dbUrl = env.DATABASE_URL; // string
+    ```
+  </Tab>
+</Tabs>
+
+### Key Differences
+
+| Feature        | dotenv-safe              | nviron                       |
+| -------------- | ------------------------ | ---------------------------- |
+| Type Safety    | ❌ No                    | ✅ Yes                       |
+| Validation     | Basic existence check    | Comprehensive Zod validation |
+| Type Coercion  | ❌ Manual                | ✅ Automatic                 |
+| Error Messages | Generic                  | Detailed and colored         |
+| TypeScript     | ❌ Requires manual types | ✅ Automatic inference       |
+
+## Migrating from envalid
+
+<Tabs items={['Before (envalid)', 'After (nviron)']}>
+  <Tab value="Before (envalid)">
+    ```javascript
+    const { cleanEnv, str, num, url } = require('envalid');
+
+    const env = cleanEnv(process.env, {
+      PORT: num({ default: 3000 }),
+      DATABASE_URL: url(),
+      NODE_ENV: str({ choices: ['development', 'production', 'test'] }),
+      API_KEY: str(),
+    });
+    ```
+  </Tab>
+  <Tab value="After (nviron)">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      PORT: z.coerce.number().default(3000),
+      DATABASE_URL: z.string().url(),
+      NODE_ENV: z.enum(['development', 'production', 'test']),
+      API_KEY: z.string(),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+### Conversion Table
+
+| envalid                   | nviron                    |
+| ------------------------- | ------------------------- |
+| `str()`                   | `z.string()`              |
+| `num()`                   | `z.coerce.number()`       |
+| `bool()`                  | `z.coerce.boolean()`      |
+| `url()`                   | `z.string().url()`        |
+| `email()`                 | `z.string().email()`      |
+| `str({ choices: [...] })` | `z.enum([...])`           |
+| `str({ default: 'x' })`   | `z.string().default('x')` |
+| `str().optional()`        | `z.string().optional()`   |
+
+### Custom Validators
+
+<Tabs items={['envalid', 'nviron']}>
+  <Tab value="envalid">
+    ```javascript
+    const { makeValidator } = require('envalid');
+
+    const strongPassword = makeValidator((input) => {
+      if (input.length < 12) {
+        throw new Error('Password must be at least 12 characters');
+      }
+      return input;
+    });
+    
+    const env = cleanEnv(process.env, {
+      PASSWORD: strongPassword(),
+    });
+    ```
+  </Tab>
+  <Tab value="nviron">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      PASSWORD: z.string().min(12, {
+        message: 'Password must be at least 12 characters',
+      }),
+      
+      // Or with custom refinement
+      PASSWORD: z.string().refine(
+        (pwd) => pwd.length >= 12 && /[A-Z]/.test(pwd),
+        { message: 'Password must be 12+ chars with uppercase' }
+      ),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Migrating from t3-env
+
+<Tabs items={['Before (t3-env)', 'After (nviron)']}>
+  <Tab value="Before (t3-env)">
+    ```typescript
+    import { createEnv } from "@t3-oss/env-core";
+    import { z } from "zod";
+
+    export const env = createEnv({
+      server: {
+        DATABASE_URL: z.string().url(),
+        API_SECRET: z.string().min(32),
+      },
+      client: {
+        NEXT_PUBLIC_API_URL: z.string().url(),
+      },
+      runtimeEnv: process.env,
+    });
+    ```
+  </Tab>
+  <Tab value="After (nviron)">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      // Server
+      DATABASE_URL: z.string().url(),
+      API_SECRET: z.string().min(32),
+      
+      // Client (Next.js)
+      NEXT_PUBLIC_API_URL: z.string().url(),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+### Key Differences
+
+**t3-env:**
+
+- Separates server/client explicitly
+- Built specifically for Next.js
+- More configuration required
+
+**nviron:**
+
+- No explicit separation needed (Next.js handles this with `NEXT_PUBLIC_` prefix)
+- Framework agnostic
+- Simpler API
+
+<Callout type="info">
+  For Next.js projects, nviron relies on Next.js's built-in `NEXT_PUBLIC_`
+  prefix convention rather than requiring explicit client/server separation.
+</Callout>
+
+## Migrating from joi
+
+<Tabs items={['Before (joi)', 'After (nviron)']}>
+  <Tab value="Before (joi)">
+    ```javascript
+    const Joi = require('joi');
+
+    const envSchema = Joi.object({
+      PORT: Joi.number().default(3000),
+      DATABASE_URL: Joi.string().uri().required(),
+      NODE_ENV: Joi.string()
+        .valid('development', 'production', 'test')
+        .required(),
+    }).unknown();
+    
+    const { error, value: env } = envSchema.validate(process.env);
+    
+    if (error) {
+      throw new Error(`Config validation error: ${error.message}`);
+    }
+    ```
+  </Tab>
+  <Tab value="After (nviron)">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      PORT: z.coerce.number().default(3000),
+      DATABASE_URL: z.string().url(),
+      NODE_ENV: z.enum(['development', 'production', 'test']),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+### Conversion Table
+
+| Joi                            | nviron/Zod                         |
+| ------------------------------ | ---------------------------------- |
+| `Joi.string()`                 | `z.string()`                       |
+| `Joi.number()`                 | `z.coerce.number()`                |
+| `Joi.boolean()`                | `z.coerce.boolean()`               |
+| `Joi.string().uri()`           | `z.string().url()`                 |
+| `Joi.string().email()`         | `z.string().email()`               |
+| `Joi.string().valid('a', 'b')` | `z.enum(['a', 'b'])`               |
+| `Joi.string().default('x')`    | `z.string().default('x')`          |
+| `Joi.string().optional()`      | `z.string().optional()`            |
+| `Joi.string().required()`      | `z.string()` (required by default) |
+| `Joi.number().min(5)`          | `z.coerce.number().min(5)`         |
+| `Joi.number().max(10)`         | `z.coerce.number().max(10)`        |
+
+## Framework-Specific Migrations
+
+### Next.js Projects
+
+If you're using environment variables directly in Next.js:
+
+<Steps>
+<Step>
+### Create env.ts
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // Server-only
+  DATABASE_URL: z.string().url(),
+  API_SECRET: z.string().min(32),
+
+  // Client-accessible (NEXT_PUBLIC_ prefix)
+  NEXT_PUBLIC_API_URL: z.string().url(),
+  NEXT_PUBLIC_APP_NAME: z.string(),
+});
+```
+
+</Step>
+
+<Step>
+### Update next.config.mjs
+
+```javascript title="next.config.mjs"
+// Validate at build time
+import "./src/env.ts";
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+export default nextConfig;
+```
+
+</Step>
+
+<Step>
+### Replace process.env
+
+```typescript
+// Before
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+// After
+import { env } from "@/env";
+const apiUrl = env.NEXT_PUBLIC_API_URL;
+```
+
+</Step>
+</Steps>
+
+### Vite Projects
+
+<Steps>
+<Step>
+### Install nviron
+
+```bash
+npm install nviron
+```
+
+</Step>
+
+<Step>
+### Create env.ts with Vite source
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+    APP_NAME: z.string(),
+  },
+  {
+    source: import.meta.env,
+    prefix: "VITE_",
+  },
+);
+```
+
+</Step>
+
+<Step>
+### Update .env files
+
+```bash title=".env"
+VITE_API_URL=https://api.example.com
+VITE_APP_NAME=My App
+```
+
+</Step>
+
+<Step>
+### Replace import.meta.env
+
+```typescript
+// Before
+const apiUrl = import.meta.env.VITE_API_URL;
+
+// After
+import { env } from "./env";
+const apiUrl = env.API_URL; // Note: no VITE_ prefix
+```
+
+</Step>
+</Steps>
+
+## Common Migration Patterns
+
+### Environment-Specific Configuration
+
+If you have different `.env` files for different environments:
+
+```typescript title="src/env.ts"
+import { defineEnv, z } from "nviron";
+
+const isProduction = process.env.NODE_ENV === "production";
+
+export const env = defineEnv({
+  NODE_ENV: z.enum(["development", "production", "test"]),
+
+  // Stricter validation in production
+  DATABASE_URL: isProduction
+    ? z.string().url().startsWith("postgresql://")
+    : z.string().url(),
+
+  // Required in production, optional in development
+  SENTRY_DSN: isProduction ? z.string().url() : z.string().url().optional(),
+});
+```
+
+### Optional with Fallbacks
+
+Converting optional variables with fallback logic:
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+    ```typescript
+    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    const maxRetries = parseInt(process.env.MAX_RETRIES || '3');
+    const enableCache = process.env.ENABLE_CACHE === 'true' || true;
+    ```
+  </Tab>
+  <Tab value="After">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      REDIS_URL: z.string().url().default('redis://localhost:6379'),
+      MAX_RETRIES: z.coerce.number().default(3),
+      ENABLE_CACHE: z.coerce.boolean().default(true),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+### Complex Parsing
+
+Converting complex parsing logic:
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+    ```typescript
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+    const featureFlags = JSON.parse(process.env.FEATURE_FLAGS || '{}');
+    const portRange = process.env.PORT_RANGE?.split('-').map(Number) || [3000, 4000];
+    ```
+  </Tab>
+  <Tab value="After">
+    ```typescript
+    import { defineEnv, z } from 'nviron';
+
+    export const env = defineEnv({
+      ALLOWED_ORIGINS: z.string()
+        .default('')
+        .transform((val) => val.split(',').filter(Boolean)),
+      
+      FEATURE_FLAGS: z.string()
+        .default('{}')
+        .transform((val) => JSON.parse(val))
+        .pipe(z.record(z.boolean())),
+      
+      PORT_RANGE: z.string()
+        .default('3000-4000')
+        .transform((val) => val.split('-').map(Number)),
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Testing After Migration
+
+### Verify Validation Works
+
+```typescript
+// Test invalid values
+process.env.PORT = "not-a-number";
+// Should throw error with clear message
+
+process.env.DATABASE_URL = "invalid-url";
+// Should throw error
+
+process.env.API_KEY = "too-short";
+// Should throw error if min length specified
+```
+
+### Check Type Safety
+
+```typescript
+import { env } from "./env";
+
+// TypeScript should catch these errors:
+env.PORT.toUpperCase(); // ❌ Error: number doesn't have toUpperCase
+env.DATABASE_URL.toFixed(2); // ❌ Error: string doesn't have toFixed
+
+// These should work:
+env.PORT.toFixed(2); // ✅ number method
+env.DATABASE_URL.toUpperCase(); // ✅ string method
+```
+
+## Rollback Plan
+
+If you need to rollback the migration:
+
+1. **Keep old code temporarily**
+
+   ```typescript
+   // Keep both during migration
+   export const env = defineEnv({ ... }); // New
+   export const legacyEnv = process.env; // Old
+   ```
+
+2. **Gradual migration**
+   - Migrate one module at a time
+   - Test thoroughly before moving to the next
+
+3. **Feature flag**
+
+   ```typescript
+   const USE_NVIRON = process.env.USE_NVIRON === "true";
+   export const env = USE_NVIRON ? nvironEnv : legacyEnv;
+   ```
+
+<Callout type="warn">
+  **Migration Tip:** Start with non-critical environments (development/staging)
+  before migrating production.
+</Callout>

@@ -1,0 +1,585 @@
+---
+title: FAQ
+description: Frequently asked questions about nviron
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+## General Questions
+
+### What is nviron?
+
+Nviron is a lightweight, type-safe environment variable management library for JavaScript and TypeScript. It uses Zod for runtime validation and provides automatic TypeScript type inference, making environment variable handling safer and more developer-friendly.
+
+### Why should I use nviron?
+
+Without nviron, you need to:
+
+- Manually validate environment variables
+- Write repetitive type conversion code
+- Maintain separate TypeScript type definitions
+- Handle missing or invalid values at runtime
+
+With nviron, you get:
+
+- ✅ Automatic runtime validation
+- ✅ Full TypeScript type safety
+- ✅ Clear, colored error messages
+- ✅ Centralized configuration
+- ✅ Zero boilerplate
+
+### Is nviron production-ready?
+
+Yes! Nviron is designed for production use. It validates environment variables at startup, ensuring your application never runs with invalid configuration.
+
+### What's the difference between nviron and other solutions?
+
+| Feature        | nviron      | dotenv      | envalid     | t3-env             |
+| -------------- | ----------- | ----------- | ----------- | ------------------ |
+| TypeScript     | ✅ Built-in | ❌ None     | ⚠️ Manual   | ✅ Built-in        |
+| Validation     | ✅ Zod      | ❌ None     | ✅ Custom   | ✅ Zod             |
+| Framework      | ✅ Agnostic | ✅ Agnostic | ✅ Agnostic | ⚠️ Next.js focused |
+| Error Messages | ✅ Detailed | ❌ Basic    | ⚠️ OK       | ✅ Good            |
+| Size           | ✅ Small    | ✅ Small    | ⚠️ Medium   | ⚠️ Medium          |
+
+## Installation & Setup
+
+### Do I need to install Zod separately?
+
+No! Nviron re-exports Zod, so you can import `z` directly from nviron:
+
+```typescript
+import { defineEnv, z } from "nviron";
+```
+
+However, if you use Zod extensively elsewhere in your application, you may want to install it separately for consistency.
+
+### Does nviron work with TypeScript?
+
+Yes! Nviron is built with TypeScript and provides full type safety. It automatically infers types from your Zod schema.
+
+### Does nviron work with JavaScript?
+
+Yes! While nviron is designed for TypeScript, it works perfectly with JavaScript. You just won't get the type safety benefits.
+
+### What Node.js version is required?
+
+Nviron requires Node.js 16.x or higher.
+
+## Usage Questions
+
+### Why do I need to use z.coerce?
+
+Environment variables are always strings. Use `z.coerce` to convert them to other types:
+
+```typescript
+// ❌ Wrong: Expects actual number
+PORT: z.number();
+
+// ✅ Correct: Converts string to number
+PORT: z.coerce.number();
+```
+
+### How do I make a variable optional?
+
+Use `.optional()` or provide a default value:
+
+```typescript
+const env = defineEnv({
+  // Optional, can be undefined
+  REDIS_URL: z.string().url().optional(),
+
+  // Optional with default
+  PORT: z.coerce.number().default(3000),
+});
+```
+
+### How do I validate environment-specific requirements?
+
+Use conditional validation:
+
+```typescript
+const isProduction = process.env.NODE_ENV === "production";
+
+const env = defineEnv({
+  // Required in production only
+  SENTRY_DSN: isProduction ? z.string().url() : z.string().url().optional(),
+});
+```
+
+### Can I use environment variables from different sources?
+
+Yes! Use the `source` option:
+
+```typescript
+// Vite
+const env = defineEnv(
+  { ... },
+  { source: import.meta.env }
+);
+
+// Custom object
+const env = defineEnv(
+  { ... },
+  { source: myCustomEnv }
+);
+```
+
+### How do I handle prefixes like VITE*or NEXT_PUBLIC*?
+
+Use the `prefix` option:
+
+```typescript
+const env = defineEnv(
+  {
+    API_URL: z.string().url(), // Schema without prefix
+  },
+  {
+    source: import.meta.env,
+    prefix: "VITE_", // Strips VITE_ prefix
+  },
+);
+
+// .env file has VITE_API_URL
+// Access as env.API_URL
+```
+
+## Validation Questions
+
+### What types of validation can I use?
+
+Nviron uses Zod, which supports extensive validation:
+
+```typescript
+const env = defineEnv({
+  // String validation
+  EMAIL: z.string().email(),
+  URL: z.string().url(),
+  MIN_LENGTH: z.string().min(5),
+  PATTERN: z.string().regex(/^[A-Z]+$/),
+
+  // Number validation
+  PORT: z.coerce.number().int().positive().max(65535),
+  PERCENTAGE: z.coerce.number().min(0).max(100),
+
+  // Enums
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]),
+
+  // Custom validation
+  API_KEY: z.string().refine((key) => key.startsWith("sk_"), {
+    message: "API key must start with sk_",
+  }),
+});
+```
+
+### How do I validate URLs?
+
+```typescript
+const env = defineEnv({
+  // Basic URL validation
+  API_URL: z.string().url(),
+
+  // URL with specific protocol
+  DATABASE_URL: z.string().url().startsWith("postgresql://"),
+
+  // HTTPS only
+  WEBHOOK_URL: z.string().url().startsWith("https://"),
+});
+```
+
+### How do I validate secrets?
+
+```typescript
+const env = defineEnv({
+  // Minimum length
+  JWT_SECRET: z.string().min(32),
+
+  // Exact length
+  ENCRYPTION_KEY: z.string().length(64),
+
+  // Pattern validation
+  API_KEY: z.string().regex(/^sk_[a-zA-Z0-9]{32}$/),
+
+  // Provider-specific
+  STRIPE_KEY: z.string().startsWith("sk_"),
+  SENDGRID_KEY: z.string().startsWith("SG."),
+});
+```
+
+### How do I transform values?
+
+Use `.transform()`:
+
+```typescript
+const env = defineEnv({
+  // Split comma-separated list
+  ALLOWED_ORIGINS: z.string().transform((val) => val.split(",")),
+
+  // Parse JSON
+  FEATURES: z
+    .string()
+    .transform((val) => JSON.parse(val))
+    .pipe(z.record(z.boolean())),
+
+  // Convert to uppercase
+  ENV: z.string().transform((val) => val.toUpperCase()),
+});
+```
+
+## Error Handling
+
+### What happens when validation fails?
+
+Nviron displays a clear error message and exits the process:
+
+```bash
+❌ Environment Variable Missing or Invalid
+
+2 issues found in your environment configuration.
+
+1. API_KEY → String must contain at least 32 character(s)
+2. DATABASE_URL → Invalid url
+
+💡 Check your .env file or environment variables before starting the server.
+```
+
+### Can I customize error messages?
+
+Yes, provide custom messages in your validation:
+
+```typescript
+const env = defineEnv({
+  API_KEY: z.string().min(32, {
+    message:
+      "API key must be at least 32 characters. Generate one with: openssl rand -base64 32",
+  }),
+
+  DATABASE_URL: z
+    .string()
+    .url()
+    .refine((url) => url.startsWith("postgresql://"), {
+      message:
+        "Database must be PostgreSQL. Format: postgresql://user:password@host:port/db",
+    }),
+});
+```
+
+### How do I prevent the process from exiting on error?
+
+Currently, nviron exits on validation failure by design to prevent running with invalid configuration. This is a safety feature.
+
+If you need different behavior, you can catch the error:
+
+```typescript
+try {
+  const env = defineEnv({ ... });
+} catch (error) {
+  console.error('Environment validation failed:', error);
+  // Handle error your way
+}
+```
+
+## Framework-Specific Questions
+
+### How do I use nviron with Next.js?
+
+```typescript
+// src/env.ts
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  // Server-only
+  DATABASE_URL: z.string().url(),
+
+  // Client-side (NEXT_PUBLIC_ prefix)
+  NEXT_PUBLIC_API_URL: z.string().url(),
+});
+```
+
+```javascript
+// next.config.mjs
+import "./src/env.ts"; // Validate at build time
+
+export default {
+  /* config */
+};
+```
+
+### How do I use nviron with Vite?
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv(
+  {
+    API_URL: z.string().url(),
+  },
+  {
+    source: import.meta.env,
+    prefix: "VITE_",
+  },
+);
+```
+
+### How do I use nviron with Express?
+
+```typescript
+// src/env.ts
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+});
+```
+
+```typescript
+// src/server.ts
+import { env } from "./env";
+import express from "express";
+
+const app = express();
+app.listen(env.PORT);
+```
+
+### Does nviron work with serverless/Lambda?
+
+Yes! Nviron works with any Node.js environment:
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+export const env = defineEnv({
+  AWS_REGION: z.string().default("us-east-1"),
+  DATABASE_URL: z.string().url(),
+  API_KEY: z.string().min(32),
+});
+```
+
+## Performance Questions
+
+### Does nviron impact startup time?
+
+Validation happens once at startup. The impact is minimal (typically < 10ms) and ensures your app doesn't run with invalid configuration.
+
+### Does nviron use a lot of memory?
+
+No. Nviron creates a single validated object at startup with minimal overhead.
+
+### Should I worry about bundle size?
+
+Nviron is lightweight. The main dependency is Zod, which you'd likely use anyway for validation.
+
+## Testing Questions
+
+### How do I test with nviron?
+
+Use custom sources for testing:
+
+```typescript
+import { defineEnv, z } from "nviron";
+
+const testEnv = defineEnv(
+  {
+    DATABASE_URL: z.string().url(),
+    API_KEY: z.string(),
+  },
+  {
+    source: {
+      DATABASE_URL: "postgresql://localhost:5432/test_db",
+      API_KEY: "test-key-12345",
+    },
+  },
+);
+```
+
+### How do I mock environment variables in tests?
+
+```typescript
+// In your test file
+import { defineEnv, z } from "nviron";
+
+describe("My Feature", () => {
+  it("works with custom env", () => {
+    const env = defineEnv(
+      { API_URL: z.string().url() },
+      { source: { API_URL: "https://test.api" } },
+    );
+
+    expect(env.API_URL).toBe("https://test.api");
+  });
+});
+```
+
+### Should I validate environment in tests?
+
+Yes! This ensures your test environment is properly configured:
+
+```typescript
+// test/setup.ts
+import { defineEnv, z } from "nviron";
+
+export const testEnv = defineEnv({
+  DATABASE_URL: z.string().url(),
+  TEST_API_KEY: z.string(),
+});
+```
+
+## Advanced Questions
+
+### Can I validate cross-field dependencies?
+
+Yes, use Zod's refinement on the entire schema:
+
+```typescript
+const env = defineEnv({
+  MIN_POOL_SIZE: z.coerce.number(),
+  MAX_POOL_SIZE: z.coerce.number(),
+}).refine((data) => data.MIN_POOL_SIZE < data.MAX_POOL_SIZE, {
+  message: "MIN_POOL_SIZE must be less than MAX_POOL_SIZE",
+});
+```
+
+### Can I have different schemas for different environments?
+
+Yes:
+
+```typescript
+const isDevelopment = process.env.NODE_ENV === "development";
+
+const devSchema = {
+  DEBUG: z.coerce.boolean().default(true),
+  MOCK_APIS: z.coerce.boolean().default(true),
+};
+
+const prodSchema = {
+  SENTRY_DSN: z.string().url(),
+  CDN_URL: z.string().url(),
+};
+
+const baseSchema = {
+  NODE_ENV: z.enum(["development", "production"]),
+  DATABASE_URL: z.string().url(),
+};
+
+export const env = defineEnv({
+  ...baseSchema,
+  ...(isDevelopment ? devSchema : prodSchema),
+});
+```
+
+### Can I extend or compose schemas?
+
+Yes, schemas are just objects:
+
+```typescript
+const baseSchema = {
+  NODE_ENV: z.enum(["development", "production", "test"]),
+  PORT: z.coerce.number(),
+};
+
+const databaseSchema = {
+  DATABASE_URL: z.string().url(),
+  DATABASE_POOL_SIZE: z.coerce.number(),
+};
+
+const cacheSchema = {
+  REDIS_URL: z.string().url(),
+  CACHE_TTL: z.coerce.number(),
+};
+
+export const env = defineEnv({
+  ...baseSchema,
+  ...databaseSchema,
+  ...cacheSchema,
+});
+```
+
+### How do I handle secrets rotation?
+
+Nviron validates at startup, so:
+
+1. Update your environment variables (e.g., in Kubernetes secrets, AWS Secrets Manager)
+2. Restart your application
+3. New values are validated on startup
+
+For zero-downtime rotation, you might want to reload environment variables without restarting:
+
+```typescript
+// Note: This is advanced usage
+let env = defineEnv({ ... });
+
+export function reloadEnv() {
+  env = defineEnv({ ... });
+  return env;
+}
+
+export { env };
+```
+
+## Migration Questions
+
+### Can I gradually migrate to nviron?
+
+Yes! You can use both old and new approaches side-by-side:
+
+```typescript
+// New validated env
+export const env = defineEnv({ ... });
+
+// Keep old process.env access for unmigrated code
+export const legacyEnv = process.env;
+```
+
+### How do I migrate from envalid/joi/dotenv-safe?
+
+See our comprehensive [Migration Guide](/docs/migration-guide) for step-by-step instructions.
+
+### Will migration break my existing code?
+
+Not if you maintain the same variable names and types. Migration is about moving validation logic to a centralized location.
+
+## Troubleshooting
+
+### Why am I getting "Expected string, received undefined"?
+
+The environment variable is not set. Check:
+
+1. Variable exists in your `.env` file
+2. Variable name matches exactly (case-sensitive)
+3. `.env` file is being loaded (for Node.js, install `dotenv`)
+
+### Why am I getting "Expected number, received string"?
+
+Use `z.coerce.number()` instead of `z.number()`:
+
+```typescript
+// ❌ Wrong
+PORT: z.number();
+
+// ✅ Correct
+PORT: z.coerce.number();
+```
+
+### Why isn't my .env file being loaded?
+
+For Node.js projects, ensure dotenv is configured:
+
+```typescript
+import "dotenv/config";
+import { env } from "./env";
+```
+
+Or use the `-r` flag:
+
+```bash
+node -r dotenv/config src/index.js
+```
+
+For framework-specific solutions, see [Troubleshooting](/docs/troubleshooting).
+
+<Callout type="info">
+  **Can't find your question?** Open an issue on
+  [GitHub](https://github.com/your-username/nviron/issues) or check the
+  [Troubleshooting](/docs/troubleshooting) guide.
+</Callout>
