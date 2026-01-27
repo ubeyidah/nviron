@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { Navbar } from "@/components/shared/nav-bar";
-import { Footer } from "@/components/shared/footer";
 
 export const metadata: Metadata = {
   title: "NVIRON",
@@ -16,17 +15,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          {children}
-          <Footer />
-        </ThemeProvider>
+      <body
+        // required styles
+        className="flex flex-col min-h-screen"
+      >
+        <RootProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </RootProvider>
       </body>
     </html>
   );

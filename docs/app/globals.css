@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Fumadocs styles */
+@import 'fumadocs-ui/css/ruby.css';
+@import 'fumadocs-ui/css/preset.css';
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -114,9 +117,6 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   .bg-gradient {
     @apply bg-gradient-to-l from-transparent via-red-800/15 to-transparent;
   }
@@ -125,3 +125,6 @@
 .hero-h {
   height: calc(100vh - 60px);
 }
+
+
+
