@@ -19,11 +19,20 @@ export default async function Page({
   const page = source.getPage(resolvedParams.slug);
   if (!page) notFound();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const MDX = (page.data as any).body;
 
   return (
-    <DocsPage tableOfContent={{ enabled: true, single: true, style: "clerk" }} toc={(page.data as any).toc} full={(page.data as any).full}>
+    <DocsPage
+      tableOfContent={{ enabled: true, single: true, style: "clerk" }}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toc={(page.data as any).toc}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      full={(page.data as any).full}
+    >
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <DocsTitle>{(page.data as any).title}</DocsTitle>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <DocsDescription>{(page.data as any).description}</DocsDescription>
       <DocsBody>
         <MDX
@@ -51,7 +60,9 @@ export async function generateMetadata({
   if (!page) notFound();
 
   return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     title: (page.data as any).title,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     description: (page.data as any).description,
   };
 }

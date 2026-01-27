@@ -2,13 +2,13 @@ import { EnvData } from "../types";
 
 export const normalizeEnv = (
   envData: EnvData,
-  prefix?: string
+  prefix?: string,
 ): { normalizedEnv: EnvData; keyMap: Record<string, string> } => {
   const keyMap: Record<string, string> = {};
   const normalizedEnv: EnvData = {};
 
   const nonPrefixedEntries = Object.entries(envData).filter(
-    ([key]) => !prefix || !key.startsWith(prefix)
+    ([key]) => !prefix || !key.startsWith(prefix),
   );
 
   for (const [originalKey, value] of nonPrefixedEntries) {
@@ -18,7 +18,7 @@ export const normalizeEnv = (
 
   if (prefix) {
     const prefixedEntries = Object.entries(envData).filter(([key]) =>
-      key.startsWith(prefix)
+      key.startsWith(prefix),
     );
 
     for (const [originalKey, value] of prefixedEntries) {
@@ -26,7 +26,7 @@ export const normalizeEnv = (
 
       if (Object.prototype.hasOwnProperty.call(normalizedEnv, normalizedKey)) {
         throw new Error(
-          `Environment variable collision: Normalized key '${normalizedKey}' from prefixed variable '${originalKey}' conflicts with existing non-prefixed variable '${keyMap[normalizedKey]}'. Please resolve this conflict.`
+          `Environment variable collision: Normalized key '${normalizedKey}' from prefixed variable '${originalKey}' conflicts with existing non-prefixed variable '${keyMap[normalizedKey]}'. Please resolve this conflict.`,
         );
       }
 

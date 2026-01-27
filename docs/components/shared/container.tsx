@@ -11,7 +11,7 @@ const Container = ({ children, className, as: Component = "div" }: iApp) => {
     <Component
       className={cn(
         "max-w-6xl mx-auto px-2 md:px-3 border-dotted border-l border-r",
-        className
+        className,
       )}
     >
       {children}

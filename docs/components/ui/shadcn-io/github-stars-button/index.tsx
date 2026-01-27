@@ -72,7 +72,7 @@ function GitHubStarsButton({
 
   const repoUrl = React.useMemo(
     () => `https://github.com/${username}/${repo}`,
-    [username, repo]
+    [username, repo],
   );
 
   React.useEffect(() => {
@@ -128,12 +128,12 @@ function GitHubStarsButton({
   const renderNumberSegments = (
     segments: string[],
     unit: string,
-    isGhost: boolean
+    isGhost: boolean,
   ) => (
     <span
       className={cn(
         "flex items-center gap-px",
-        isGhost ? "invisible" : "absolute top-0 left-0"
+        isGhost ? "invisible" : "absolute top-0 left-0",
       )}
     >
       {segments.map((segment, index) => (
@@ -154,7 +154,7 @@ function GitHubStarsButton({
       handleDisplayParticles();
       setTimeout(() => window.open(repoUrl, "_blank"), 500);
     },
-    [handleDisplayParticles, repoUrl]
+    [handleDisplayParticles, repoUrl],
   );
 
   if (isLoading) return <Skeleton className="h-9 py-2 px-14 rounded-lg" />;
@@ -170,7 +170,7 @@ function GitHubStarsButton({
       onClick={handleClick}
       className={cn(
         "flex items-center gap-2 text-sm bg-primary text-primary-foreground rounded-lg px-4 py-2 h-9 has-[>svg]:px-3 cursor-pointer whitespace-nowrap font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-[18px] shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-        className
+        className,
       )}
       {...props}
     >
@@ -237,12 +237,12 @@ function GitHubStarsButton({
         {renderNumberSegments(
           ghostFormattedNumber.number,
           ghostFormattedNumber.unit,
-          true
+          true,
         )}
         {renderNumberSegments(
           formattedResult.number,
           formattedResult.unit,
-          false
+          false,
         )}
       </span>
     </motion.a>

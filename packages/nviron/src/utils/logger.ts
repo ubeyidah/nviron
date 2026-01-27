@@ -8,17 +8,17 @@ class Logger {
           "E" +
           paint.bgRed(paint.white("nviron")) +
           paint.red("ment Variable Missing or Invalid")
-        } `}\n`
-      )
+        } `}\n`,
+      ),
     );
   }
   summary(total: number) {
     console.log(
       paint.bold(
         paint.yellow(
-          `${total} issue${total > 1 ? "s" : ""} found in your environment configuration.\n`
-        )
-      )
+          `${total} issue${total > 1 ? "s" : ""} found in your environment configuration.\n`,
+        ),
+      ),
     );
   }
 
@@ -36,15 +36,15 @@ class Logger {
         : paint.cyan(paint.bold(name));
 
     console.log(
-      `${paint.gray(`${index}.`)} ${keyDisplay} ${paint.red("→")} ${paint.red(reason)}`
+      `${paint.gray(`${index}.`)} ${keyDisplay} ${paint.red("→")} ${paint.red(reason)}`,
     );
   }
 
   tip() {
     console.log(
       paint.blue(
-        "\n💡 Check your .env file or environment variables before starting the server."
-      )
+        "\n💡 Check your .env file or environment variables before starting the server.",
+      ),
     );
   }
 }
