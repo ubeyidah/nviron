@@ -146,3 +146,10 @@ We believe open source grows stronger through collaboration whether it’s bug f
 If you’d like to contribute, please read our detailed [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 #### Don’t forget to ⭐ star the repo if you find it helpful, it really means a lot!
+
+## 🚀 CI/CD & Releases
+
+This project uses automated CI/CD workflows for quality assurance and releases. For maintainers:
+- Automated npm publishing and GitHub releases when tags are pushed
+- Version bump workflow for easy release management
+- See [CICD_SETUP.md](./CICD_SETUP.md) for complete setup guide
