@@ -23,8 +23,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js}": [
-      "pnpm turbo lint --filter=...",
-      "pnpm turbo typecheck --filter=..."
+      "pnpm turbo lint",
+      "pnpm turbo typecheck"
     ]
   },
   "dependencies": {
