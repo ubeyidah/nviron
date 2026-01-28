@@ -26,5 +26,8 @@
       "pnpm turbo lint --filter=...",
       "pnpm turbo typecheck --filter=..."
     ]
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1"
   }
 }

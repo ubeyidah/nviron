@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: {
@@ -53,11 +54,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <meta name="google-site-verification" content="5jns32WyAOb-lGnTjBgP3mqp8ZvlDdWnbZMGQJxlUeo" />
+      <meta
+        name="google-site-verification"
+        content="5jns32WyAOb-lGnTjBgP3mqp8ZvlDdWnbZMGQJxlUeo"
+      />
       <body
         // required styles
         className="flex flex-col min-h-screen"
       >
+        <Analytics />
         <RootProvider>
           <ThemeProvider
             attribute="class"
