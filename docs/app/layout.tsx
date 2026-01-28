@@ -20,8 +20,9 @@ export const metadata: Metadata = {
     "type-safe",
     "process.env",
     "developer tools",
+    "nviron",
   ],
-  authors: [{ name: "Ubeyidah", url: "https://github.com/ubeyidah" }],
+  authors: [{ name: "Ubeyidah", url: "https://ubeyidah.tech" }],
   creator: "Ubeyidah",
   openGraph: {
     title: "NVIRON - Type-safe Environment Variables",
