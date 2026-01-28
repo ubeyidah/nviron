@@ -58,32 +58,11 @@ Ensure your repository has the correct workflow permissions:
 
 The `packages/nviron/package.json` should include:
 
-```json
-{
-  "name": "nviron",
-  "version": "2.1.7",
-  "description": "Lightweight, type-safe environment variable management library",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ubeyidah/nviron.git",
-    "directory": "packages/nviron"
-  },
-  "homepage": "https://nviron.vercel.app",
-  "bugs": {
-    "url": "https://github.com/ubeyidah/nviron/issues"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "files": [
     "dist",
     "src",
-    "README.md",
-    "LICENSE"
-  ]
-}
-```
+    "README.md"
+  ],
 
 ## Workflows
 

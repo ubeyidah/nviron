@@ -67,17 +67,17 @@ jobs:
           # Check if version already exists in CHANGELOG
           if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.md; then
             # Add new version entry at the top
-            NEW_ENTRY="## [$NEW_VERSION]"
-            NEW_ENTRY="${NEW_ENTRY}(https://github.com/ubeyidah/nviron/compare/"
-            NEW_ENTRY="${NEW_ENTRY}v$CURRENT_VERSION...v$NEW_VERSION) ($TODAY)"
-            awk -v entry="$NEW_ENTRY" '/^# Changelog/ {
+            COMPARE_URL="https://github.com/ubeyidah/nviron/compare/"
+            NEW_ENTRY="## [$NEW_VERSION](${COMPARE_URL}v$CURRENT_VERSION..."
+            NEW_ENTRY="${NEW_ENTRY}v$NEW_VERSION) ($TODAY)"
+            awk -v entry="$NEW_ENTRY" -v version="$NEW_VERSION" '/^# Changelog/ {
               print $0;
               print "";
               print entry;
               print "";
               print "### Changes";
               print "";
-              print "- Version bump to '"$NEW_VERSION"'";
+              print "- Version bump to " version;
               next
             } {print}' CHANGELOG.md > CHANGELOG.tmp
             mv CHANGELOG.tmp CHANGELOG.md
