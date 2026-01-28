@@ -74,28 +74,29 @@ jobs:
         run: |
           # Extract changelog for current version
           VERSION=${{ steps.extract_version.outputs.version }}
-          
+
           # Create temporary file for release notes
           RELEASE_NOTES=$(mktemp)
-          
+
           # Check if CHANGELOG.md exists and extract relevant section
           if [ -f "CHANGELOG.md" ]; then
             # Extract the section for this version
             awk "/## \[${VERSION}\]/,/## \[/" CHANGELOG.md | sed '$ d' > "$RELEASE_NOTES"
-            
+
             # If nothing was extracted, use a default message
             if [ ! -s "$RELEASE_NOTES" ]; then
               echo "Release v${VERSION}" > "$RELEASE_NOTES"
               echo "" >> "$RELEASE_NOTES"
-              echo "See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details." >> "$RELEASE_NOTES"
+              MSG="See [CHANGELOG.md](https://github.com/${{ github.repository }}"
+              echo "${MSG}/blob/main/CHANGELOG.md) for details." >> "$RELEASE_NOTES"
             fi
           else
             echo "Release v${VERSION}" > "$RELEASE_NOTES"
           fi
-          
+
           # Output the content
           cat "$RELEASE_NOTES"
-          
+
           # Set multi-line output
           {
             echo 'notes<<EOF'

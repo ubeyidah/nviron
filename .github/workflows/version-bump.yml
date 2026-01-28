@@ -47,33 +47,40 @@ jobs:
         id: bump
         run: |
           cd packages/nviron
-          
+
           # Get current version
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current version: $CURRENT_VERSION"
-          
+
           # Bump version
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
-          
+
           # Get new version
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "New version: $NEW_VERSION"
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          
+
           # Update CHANGELOG.md if needed
           cd ../..
           TODAY=$(date +%Y-%m-%d)
-          
+
           # Check if version already exists in CHANGELOG
           if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.md; then
-            # Add new version entry at the top of the changelog
-            sed -i "/^# Changelog/a\\
-\\
-## [$NEW_VERSION](https://github.com/ubeyidah/nviron/compare/v$CURRENT_VERSION...v$NEW_VERSION) ($TODAY)\\
-\\
-### Changes\\
-\\
-- Version bump to $NEW_VERSION" CHANGELOG.md
+            # Add new version entry at the top
+            NEW_ENTRY="## [$NEW_VERSION]"
+            NEW_ENTRY="${NEW_ENTRY}(https://github.com/ubeyidah/nviron/compare/"
+            NEW_ENTRY="${NEW_ENTRY}v$CURRENT_VERSION...v$NEW_VERSION) ($TODAY)"
+            awk -v entry="$NEW_ENTRY" '/^# Changelog/ {
+              print $0;
+              print "";
+              print entry;
+              print "";
+              print "### Changes";
+              print "";
+              print "- Version bump to '"$NEW_VERSION"'";
+              next
+            } {print}' CHANGELOG.md > CHANGELOG.tmp
+            mv CHANGELOG.tmp CHANGELOG.md
           fi
 
       - name: Create Pull Request
@@ -86,22 +93,24 @@ jobs:
           title: 'Release v${{ steps.bump.outputs.version }}'
           body: |
             ## Version Bump: v${{ steps.bump.outputs.version }}
-            
-            This PR bumps the version from the current version to **v${{ steps.bump.outputs.version }}**.
-            
+
+            This PR bumps the version from the current version to
+            **v${{ steps.bump.outputs.version }}**.
+
             ### Changes
             - Updated package version in `packages/nviron/package.json`
             - Updated `CHANGELOG.md` with new version entry
-            
+
             ### Release Process
             Once this PR is merged:
             1. Create a git tag: `git tag v${{ steps.bump.outputs.version }}`
-            2. Push the tag: `git push origin v${{ steps.bump.outputs.version }}`
+            2. Push the tag:
+               `git push origin v${{ steps.bump.outputs.version }}`
             3. The release workflow will automatically:
                - Run tests and build
                - Publish to npm
                - Create a GitHub release
-               
+
             Or use the following commands after merging:
             ```bash
             git checkout main
