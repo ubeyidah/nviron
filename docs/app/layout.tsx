@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | NVIRON",
+    template: "%s | Nviron – Type-safe Env Validation",
     default: "NVIRON",
   },
   description:
