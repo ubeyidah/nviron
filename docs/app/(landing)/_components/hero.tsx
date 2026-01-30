@@ -18,7 +18,7 @@ export const Hero = () => {
           className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/10 text-primary text-sm font-medium mb-6"
         >
           <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-          v1.0 is now available
+          v2.1.7 is now available
         </motion.div>
 
         <motion.h1
