@@ -1,0 +1,123 @@
+name: Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: 'patch'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.8.0
+
+      - name: Install pnpm
+        run: npm install -g pnpm@9.0.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: bump
+        run: |
+          cd packages/nviron
+
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+
+          # Bump version
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
+          # Get new version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          # Update CHANGELOG.md if needed
+          cd ../..
+          TODAY=$(date +%Y-%m-%d)
+
+          # Check if version already exists in CHANGELOG
+          if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.md; then
+            # Add new version entry at the top
+            COMPARE_URL="https://github.com/ubeyidah/nviron/compare/"
+            NEW_ENTRY="## [$NEW_VERSION](${COMPARE_URL}v$CURRENT_VERSION..."
+            NEW_ENTRY="${NEW_ENTRY}v$NEW_VERSION) ($TODAY)"
+            awk -v entry="$NEW_ENTRY" -v version="$NEW_VERSION" '/^# Changelog/ {
+              print $0;
+              print "";
+              print entry;
+              print "";
+              print "### Changes";
+              print "";
+              print "- Version bump to " version;
+              next
+            } {print}' CHANGELOG.md > CHANGELOG.tmp
+            mv CHANGELOG.tmp CHANGELOG.md
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: bump version to v${{ steps.bump.outputs.version }}'
+          branch: release/v${{ steps.bump.outputs.version }}
+          delete-branch: true
+          title: 'Release v${{ steps.bump.outputs.version }}'
+          body: |
+            ## Version Bump: v${{ steps.bump.outputs.version }}
+
+            This PR bumps the version from the current version to
+            **v${{ steps.bump.outputs.version }}**.
+
+            ### Changes
+            - Updated package version in `packages/nviron/package.json`
+            - Updated `CHANGELOG.md` with new version entry
+
+            ### Release Process
+            Once this PR is merged:
+            1. Create a git tag: `git tag v${{ steps.bump.outputs.version }}`
+            2. Push the tag:
+               `git push origin v${{ steps.bump.outputs.version }}`
+            3. The release workflow will automatically:
+               - Run tests and build
+               - Publish to npm
+               - Create a GitHub release
+
+            Or use the following commands after merging:
+            ```bash
+            git checkout main
+            git pull
+            git tag v${{ steps.bump.outputs.version }}
+            git push origin v${{ steps.bump.outputs.version }}
+            ```
+          labels: |
+            release
+            automated

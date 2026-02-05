@@ -1,9 +1,9 @@
 {
   "name": "nviron",
   "version": "2.1.7",
-  "description": "",
-  "main": "./src/index.ts",
-  "types": "dist/index.d.ts",
+  "description": "Lightweight, type-safe environment variable management library built for modern JavaScript and TypeScript projects",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
@@ -13,13 +13,42 @@
   },
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
-  "keywords": [],
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ubeyidah/nviron.git",
+    "directory": "packages/nviron"
+  },
+  "homepage": "https://nviron.vercel.app",
+  "bugs": {
+    "url": "https://github.com/ubeyidah/nviron/issues"
+  },
+  "keywords": [
+    "environment",
+    "env",
+    "config",
+    "validation",
+    "zod",
+    "typescript",
+    "type-safe",
+    "dotenv",
+    "env-var",
+    "configuration"
+  ],
   "author": "Ubeyidah",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "dependencies": {
     "zod": "^4.1.12"
   },
