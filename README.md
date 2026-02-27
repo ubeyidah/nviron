@@ -145,4 +145,9 @@ We believe open source grows stronger through collaboration whether it’s bug f
 
 If you’d like to contribute, please read our detailed [CONTRIBUTING.md](./CONTRIBUTING.md)
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ubeyidah/nviron&type=date&legend=top-left)](https://www.star-history.com/#ubeyidah/nviron&type=date&legend=top-left)
+
+
 #### Don’t forget to ⭐ star the repo if you find it helpful, it really means a lot!
