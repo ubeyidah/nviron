@@ -1,5 +1,7 @@
+import { isBrowser } from "./detect-env";
+
 // ANSI color codes
-export const ansi = {
+export const ANSI_COLOR_CODES = {
   reset: "\x1b[0m",
   bold: "\x1b[1m",
   dim: "\x1b[2m",
@@ -28,32 +30,39 @@ export const ansi = {
   bgGray: "\x1b[100m",
 };
 
-// Helper functions for color-safe wrapping
+const wrapColor = (code: string) => {
+  return (msg: string) => {
+    if (isBrowser) return msg;
+    return `${code}${msg}${ANSI_COLOR_CODES.reset}`;
+  };
+};
+
+// Object mapping for color-safe wrapping
 export const paint = {
   // Foreground colors
-  black: (msg: string) => `${ansi.black}${msg}${ansi.reset}`,
-  red: (msg: string) => `${ansi.red}${msg}${ansi.reset}`,
-  green: (msg: string) => `${ansi.green}${msg}${ansi.reset}`,
-  yellow: (msg: string) => `${ansi.yellow}${msg}${ansi.reset}`,
-  blue: (msg: string) => `${ansi.blue}${msg}${ansi.reset}`,
-  magenta: (msg: string) => `${ansi.magenta}${msg}${ansi.reset}`,
-  cyan: (msg: string) => `${ansi.cyan}${msg}${ansi.reset}`,
-  white: (msg: string) => `${ansi.white}${msg}${ansi.reset}`,
-  gray: (msg: string) => `${ansi.gray}${msg}${ansi.reset}`,
+  black: wrapColor(ANSI_COLOR_CODES.black),
+  red: wrapColor(ANSI_COLOR_CODES.red),
+  green: wrapColor(ANSI_COLOR_CODES.green),
+  yellow: wrapColor(ANSI_COLOR_CODES.yellow),
+  blue: wrapColor(ANSI_COLOR_CODES.blue),
+  magenta: wrapColor(ANSI_COLOR_CODES.magenta),
+  cyan: wrapColor(ANSI_COLOR_CODES.cyan),
+  white: wrapColor(ANSI_COLOR_CODES.white),
+  gray: wrapColor(ANSI_COLOR_CODES.gray),
 
   // Background colors
-  bgBlack: (msg: string) => `${ansi.bgBlack}${msg}${ansi.reset}`,
-  bgRed: (msg: string) => `${ansi.bgRed}${msg}${ansi.reset}`,
-  bgGreen: (msg: string) => `${ansi.bgGreen}${msg}${ansi.reset}`,
-  bgYellow: (msg: string) => `${ansi.bgYellow}${msg}${ansi.reset}`,
-  bgBlue: (msg: string) => `${ansi.bgBlue}${msg}${ansi.reset}`,
-  bgMagenta: (msg: string) => `${ansi.bgMagenta}${msg}${ansi.reset}`,
-  bgCyan: (msg: string) => `${ansi.bgCyan}${msg}${ansi.reset}`,
-  bgWhite: (msg: string) => `${ansi.bgWhite}${msg}${ansi.reset}`,
-  bgGray: (msg: string) => `${ansi.bgGray}${msg}${ansi.reset}`,
+  bgBlack: wrapColor(ANSI_COLOR_CODES.bgBlack),
+  bgRed: wrapColor(ANSI_COLOR_CODES.bgRed),
+  bgGreen: wrapColor(ANSI_COLOR_CODES.bgGreen),
+  bgYellow: wrapColor(ANSI_COLOR_CODES.bgYellow),
+  bgBlue: wrapColor(ANSI_COLOR_CODES.bgBlue),
+  bgMagenta: wrapColor(ANSI_COLOR_CODES.bgMagenta),
+  bgCyan: wrapColor(ANSI_COLOR_CODES.bgCyan),
+  bgWhite: wrapColor(ANSI_COLOR_CODES.bgWhite),
+  bgGray: wrapColor(ANSI_COLOR_CODES.bgGray),
 
   // Styles
-  bold: (msg: string) => `${ansi.bold}${msg}${ansi.reset}`,
-  dim: (msg: string) => `${ansi.dim}${msg}${ansi.reset}`,
-  italic: (msg: string) => `${ansi.italic}${msg}${ansi.reset}`,
+  bold: wrapColor(ANSI_COLOR_CODES.bold),
+  dim: wrapColor(ANSI_COLOR_CODES.dim),
+  italic: wrapColor(ANSI_COLOR_CODES.italic),
 };

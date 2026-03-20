@@ -23,8 +23,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js}": [
-      "pnpm turbo lint",
-      "pnpm turbo typecheck"
+      "sh -c 'pnpm turbo run lint'",
+      "sh -c 'pnpm turbo run check-types'"
     ]
   },
   "dependencies": {
