@@ -64,5 +64,16 @@ export async function generateMetadata({
     title: (page.data as any).title,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     description: (page.data as any).description,
+    alternates: {
+      canonical: page.url,
+    },
+    openGraph: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      title: (page.data as any).title,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      description: (page.data as any).description,
+      url: `https://nviron.vercel.app${page.url}`,
+      type: "article",
+    },
   };
 }

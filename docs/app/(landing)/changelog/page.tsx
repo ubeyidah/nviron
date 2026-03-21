@@ -2,7 +2,29 @@ import Container from "@/components/shared/container";
 import { getChangelogReleases } from "@/lib/changelog";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
+
+export const metadata: Metadata = {
+  title: "Changelog",
+  description:
+    "Track every nviron release with a clean timeline of added, changed, and fixed updates.",
+  alternates: {
+    canonical: "/changelog",
+  },
+  openGraph: {
+    title: "Nviron Changelog",
+    description:
+      "A complete timeline of nviron releases and changes for developers.",
+    url: "https://nviron.vercel.app/changelog",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nviron Changelog",
+    description: "Release-by-release updates for nviron.",
+  },
+};
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
