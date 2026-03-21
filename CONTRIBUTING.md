@@ -1,82 +1,109 @@
 # Contributing to Nviron
 
-Thank you for considering contributing! 🎉
-Your help makes Nviron better and stronger for the community.
+Thanks for your interest in contributing.
 
-Contributions can be fixing bugs, adding features, improving docs, reporting issues, or suggesting ideas.
+This guide explains how to propose changes, open pull requests, and run local checks.
 
----
+## Scope
 
-## 📝 Ways to Contribute
+This repository contains:
 
-- Fix bugs
-- Add new features
-- Improve documentation
-- Report bugs or request features via issues:
-  - [Report Bug](https://github.com/ubeyidah/nviron/issues/new?labels=bug)
-  - [Request Feature](https://github.com/ubeyidah/nviron/issues/new?labels=enhancement)
+- `packages/nviron`: the published environment validation library
+- `docs`: documentation site
+- shared config packages for linting and TypeScript
 
-- Suggest ideas or improvements
+Please keep pull requests focused and avoid unrelated refactors.
 
----
+## Development Setup
 
-## 🚀 Getting Started
+1. Fork and clone the repository.
+2. Install dependencies:
 
-1. **Fork & clone the repo**
+```bash
+npm install -g pnpm
+pnpm install
+```
 
-   ```bash
-   git clone https://github.com/ubeyidah/nviron.git
-   cd nviron
-   ```
+3. Create a branch from `main`:
 
-2. **Install dependencies**
+```bash
+git checkout -b fix/short-description
+```
 
-   ```bash
-   npm install -g pnpm
-   pnpm install
-   ```
+Branch examples:
 
-3. **Create a new branch**
-   Use descriptive names:
+- `fix/browser-ansi-output`
+- `feat/runtime-error-strategy`
+- `docs/quickstart-update`
 
-   ```text
-   feature/<feature-name>
-   fix/<bug-name>
-   docs/<doc-update>
-   ```
+## Project Commands
 
-4. **Make your changes**
+Run from repository root:
 
-5. **Run tests**
+```bash
+pnpm format --check
+pnpm lint
+pnpm build
+pnpm check-types
+pnpm test
+```
 
-   ```bash
-   pnpm run test
-   ```
+For package-focused work, you can use filters:
 
-6. **Commit your changes**
-   Use **Conventional Commits**:
+```bash
+pnpm --filter nviron test
+pnpm --filter docs build
+```
 
-   ```text
-   type(scope): short description
-   ```
+## Coding Guidelines
 
-   Examples:
-   - `feat(core): add new validation helper`
-   - `fix(cli): handle missing env gracefully`
-   - `docs(readme): update getting started section`
+- Follow existing TypeScript and linting rules.
+- Prefer small, reviewable commits.
+- Add or update tests when behavior changes.
+- Keep documentation aligned with implementation.
 
-7. **Push & create a pull request**
+## Pull Request Guidelines
 
----
+Before opening a PR:
 
-## ⚡ Guidelines
+- Ensure CI-equivalent checks pass locally.
+- Confirm your branch is up to date with `main`.
+- Include a clear summary of what changed and why.
+- Link related issues (for example `Closes #123`).
 
-- Follow existing code style
-- Keep commits focused and small
-- Run tests before submitting
-- Review open issues before creating new ones
-- Contributions via issues (bugs, features, suggestions) are welcome even without code
+PR title examples:
 
----
+- `fix: disable ANSI output in browser logs`
+- `feat: add safer runtime error strategy`
+- `docs: update Vite setup guide`
 
-Thank you for helping make Nviron better! ⭐
+## Commit Message Style
+
+Use Conventional Commits:
+
+```text
+type(scope): short description
+```
+
+Examples:
+
+- `fix(core): handle prefixed env collisions`
+- `feat(api): add optional error callback`
+- `docs(readme): simplify quick start`
+
+## Reporting Issues
+
+Use the repository issue templates for bug reports and feature requests:
+
+- Bug reports: include reproduction steps and environment details.
+- Feature requests: describe the problem and proposed solution.
+
+## Security
+
+Do not commit secrets, API keys, or `.env` values.
+
+If you discover a security issue, report it responsibly via a private channel before opening a public issue.
+
+## License
+
+By contributing, you agree that your contributions are licensed under the repository's license.
