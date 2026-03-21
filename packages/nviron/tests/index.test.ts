@@ -174,4 +174,35 @@ describe("Environment Utilities", () => {
       });
     });
   });
+
+  describe("ansi color output", () => {
+    it("should disable ANSI colors in browser environments", async () => {
+      const browserGlobals = globalThis as unknown as Record<string, unknown>;
+      const previousWindow = browserGlobals.window;
+      const previousDocument = browserGlobals.document;
+
+      vi.resetModules();
+      browserGlobals.window = {};
+      browserGlobals.document = {};
+
+      try {
+        const { paint } = await import("../src/utils/ansi-colors");
+        expect(paint.red("validation failed")).toBe("validation failed");
+      } finally {
+        if (previousWindow === undefined) {
+          delete browserGlobals.window;
+        } else {
+          browserGlobals.window = previousWindow;
+        }
+
+        if (previousDocument === undefined) {
+          delete browserGlobals.document;
+        } else {
+          browserGlobals.document = previousDocument;
+        }
+
+        vi.resetModules();
+      }
+    });
+  });
 });
