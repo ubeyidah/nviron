@@ -35,6 +35,11 @@ export function baseOptions(): BaseLayoutProps {
         url: "/docs/api-reference",
       },
       {
+        text: "Changelog",
+        url: "/changelog",
+        active: "nested-url",
+      },
+      {
         text: "GitHub",
         url: "https://github.com/ubeyidah/nviron",
         secondary: true,
