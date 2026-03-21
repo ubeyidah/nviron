@@ -26,6 +26,48 @@ export const metadata: Metadata = {
   },
 };
 
+const techArticleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: "Nviron Changelog",
+  description:
+    "Track every nviron release with a timeline of added, changed, and fixed updates.",
+  url: "https://nviron.vercel.app/changelog",
+  mainEntityOfPage: "https://nviron.vercel.app/changelog",
+  author: {
+    "@type": "Person",
+    name: "Ubeyidah",
+    url: "https://ubeyidah.tech",
+    sameAs: [
+      "https://ubeyidah.tech",
+      "https://github.com/ubeyidah",
+      "https://x.com/ubeyidah",
+    ],
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Nviron",
+    url: "https://nviron.vercel.app",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://nviron.vercel.app/logo.png",
+    },
+  },
+  contributor: {
+    "@type": "Organization",
+    name: "Nviron Contributors",
+    url: "https://github.com/ubeyidah/nviron/graphs/contributors",
+  },
+  about: [
+    {
+      "@type": "SoftwareApplication",
+      name: "Nviron",
+      url: "https://nviron.vercel.app",
+      codeRepository: "https://github.com/ubeyidah/nviron",
+    },
+  ],
+};
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("en", {
     year: "numeric",
@@ -65,6 +107,10 @@ export default async function ChangelogPage() {
 
   return (
     <section className="relative isolate overflow-hidden bg-background text-foreground">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
+      />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_circle_at_100%_0%,color-mix(in_oklab,var(--primary)_15%,transparent),transparent_55%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_oklab,var(--foreground)_4%,transparent),transparent_35%)]" />
 
