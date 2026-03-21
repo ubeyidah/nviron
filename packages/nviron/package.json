@@ -1,6 +1,6 @@
 {
   "name": "nviron",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "description": "",
   "main": "./src/index.ts",
   "types": "dist/index.d.ts",
@@ -17,8 +17,19 @@
       "default": "./dist/index.js"
     }
   },
-  "keywords": [],
+  "keywords": [
+    "environment",
+    "env",
+    "validation",
+    "zod",
+    "typescript"
+  ],
   "author": "Ubeyidah",
+  "homepage": "https://github.com/ubeyidah/nviron",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ubeyidah/nviron"
+  },
   "license": "ISC",
   "dependencies": {
     "zod": "^4.1.12"
