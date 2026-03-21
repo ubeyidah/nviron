@@ -1,52 +1,35 @@
 import Container from "./container";
-import Image from "next/image";
 import Link from "next/link";
-import { Github, Twitter } from "lucide-react";
+import { Dot } from "lucide-react";
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-dotted">
-      <Container className="bg-gradient py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col items-center md:items-start gap-4">
-            <div className="flex items-center gap-2">
-              <Image
-                src={"/logo.png"}
-                alt="logo"
-                height={30}
-                width={30}
-                className="h-8 w-8 object-contain"
-              />
-              <span className="font-bold text-xl">Nviron</span>
-            </div>
-            <p className="text-muted-foreground text-sm text-center md:text-left">
-              Type-safe environment configuration for modern Node.js
-              applications.
-            </p>
-          </div>
+    <footer className="border-t border-border/70">
+      <Container className="py-4">
+        <div className="flex flex-wrap items-center justify-center gap-1 text-sm text-muted-foreground md:justify-between">
+          <span>© {new Date().getFullYear()} Nviron</span>
 
-          <div className="flex gap-6 items-center">
+          <div className="flex flex-wrap items-center justify-center">
+            <Dot className="size-4" />
+            <span>Built by</span>{" "}
             <Link
-              href="https://github.com/ubeyidah/nviron"
+              href="https://ubeyidah.tech"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
-              <Github className="w-5 h-5" />
+              Ubeyidah
             </Link>
+            <Dot className="size-4" />
             <Link
-              href="https://twitter.com/ubeyidah"
+              href="https://github.com/ubeyidah/nviron/graphs/contributors"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
-              <Twitter className="w-5 h-5" />
+              Contributors
             </Link>
           </div>
-        </div>
-
-        <div className="mt-8 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Nviron. All rights reserved.
         </div>
       </Container>
     </footer>

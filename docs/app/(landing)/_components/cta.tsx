@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 export const Cta = () => {
   return (
-    <Container className="py-24 relative overflow-hidden bg-gradient">
+    <Container as="section" className="relative overflow-hidden py-20 md:py-24">
       <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full transform scale-75 opacity-50" />
 
       <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
