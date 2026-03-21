@@ -3,6 +3,7 @@ import { getChangelogReleases } from "@/lib/changelog";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
+import Script from "next/script";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
@@ -107,8 +108,10 @@ export default async function ChangelogPage() {
 
   return (
     <section className="relative isolate overflow-hidden bg-background text-foreground">
-      <script
+      <Script
+        id="nviron-changelog-techarticle-jsonld"
         type="application/ld+json"
+        strategy="beforeInteractive"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_circle_at_100%_0%,color-mix(in_oklab,var(--primary)_15%,transparent),transparent_55%)]" />

@@ -16,15 +16,13 @@ export const Footer = () => {
               href="https://ubeyidah.tech"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              className="ml-1 underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
               Ubeyidah
             </Link>
             <Dot className="size-4" />
             <Link
-              href="https://github.com/ubeyidah/nviron/graphs/contributors"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/contributors"
               className="underline-offset-4 transition-colors hover:text-foreground hover:underline"
             >
               Contributors

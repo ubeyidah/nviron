@@ -8,6 +8,7 @@ import {
 import { notFound } from "next/navigation";
 import { getMDXComponents } from "@/mdx-components";
 import type { Metadata } from "next";
+import Script from "next/script";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 
 function articleJsonLd(input: {
@@ -79,8 +80,10 @@ export default async function Page({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       full={(page.data as any).full}
     >
-      <script
+      <Script
+        id={`nviron-doc-techarticle-jsonld-${page.url.replace(/\W+/g, "-")}`}
         type="application/ld+json"
+        strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(articleJsonLd({ title, description, url })),
         }}

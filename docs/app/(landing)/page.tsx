@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { Hero } from "./_components/hero";
 import type { Metadata } from "next";
 
@@ -63,8 +64,10 @@ export const metadata: Metadata = {
 const Page = () => {
   return (
     <>
-      <script
+      <Script
+        id="nviron-softwareapplication-jsonld"
         type="application/ld+json"
+        strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(softwareApplicationJsonLd),
         }}

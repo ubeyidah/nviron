@@ -35,6 +35,11 @@ export function baseOptions(): BaseLayoutProps {
         url: "/changelog",
         active: "nested-url",
       },
+      {
+        text: "Contributors",
+        url: "/contributors",
+        active: "nested-url",
+      },
     ],
     githubUrl: "https://github.com/ubeyidah/nviron",
   };
