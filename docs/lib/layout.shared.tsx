@@ -31,19 +31,9 @@ export function baseOptions(): BaseLayoutProps {
         active: "nested-url",
       },
       {
-        text: "API",
-        url: "/docs/api-reference",
-      },
-      {
         text: "Changelog",
         url: "/changelog",
         active: "nested-url",
-      },
-      {
-        text: "GitHub",
-        url: "https://github.com/ubeyidah/nviron",
-        secondary: true,
-        active: "none",
       },
     ],
     githubUrl: "https://github.com/ubeyidah/nviron",
