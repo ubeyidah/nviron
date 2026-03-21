@@ -56,32 +56,44 @@ const features = [
 
 export const Features = () => {
   return (
-    <Container className="py-24 bg-gradient">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {features.map((feature, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            viewport={{ once: true }}
-          >
-            <Card className="h-full border border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-colors">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-primary" />
-                </div>
-                <CardTitle>{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base">
-                  {feature.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
-    </Container>
+    <section id="features">
+      <Container as="div" className="py-20 md:py-24">
+        <div className="mb-10 text-center md:mb-14">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Built for safe runtime config
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+            Nviron keeps your startup checks strict while staying lightweight in
+            day-to-day development.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              viewport={{ once: true }}
+            >
+              <Card className="h-full border border-border/70 bg-card/70 transition-colors hover:bg-card">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle>{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </Container>
+    </section>
   );
 };

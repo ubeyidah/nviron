@@ -3,14 +3,14 @@ import * as motion from "motion/react-client";
 
 export const CodePreview = () => {
   return (
-    <Container className="py-24 relative overflow-hidden bg-gradient">
-      <div className="flex flex-col lg:flex-row items-center gap-12">
+    <Container as="section" className="relative overflow-hidden py-20 md:py-24">
+      <div className="flex flex-col items-center gap-12 lg:flex-row">
         <div className="flex-1 text-center lg:text-left">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold mb-6"
+            className="mb-6 text-3xl font-semibold tracking-tight md:text-4xl"
           >
             Zero config. <br />
             <span className="text-primary">Maximum safety.</span>
@@ -20,7 +20,7 @@ export const CodePreview = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto lg:mx-0"
+            className="mb-8 mx-auto max-w-xl text-lg text-muted-foreground lg:mx-0"
           >
             Define your environment schema with Zod and get immediate type
             safety and runtime validation. No more debugging missing environment
@@ -33,10 +33,10 @@ export const CodePreview = () => {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="flex-1 w-full max-w-xl"
+          className="w-full max-w-xl flex-1"
         >
-          <div className="relative rounded-xl overflow-hidden bg-[#0d0d0d] border border-white/10 shadow-2xl">
-            <div className="flex items-center gap-2 px-4 py-3 bg-[#171717] border-b border-white/5">
+          <div className="relative overflow-hidden rounded-xl border border-border/70 bg-[#101216] shadow-xl">
+            <div className="flex items-center gap-2 border-b border-white/10 bg-[#1a1d24] px-4 py-3">
               <div className="w-3 h-3 rounded-full bg-red-500/50" />
               <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
               <div className="w-3 h-3 rounded-full bg-green-500/50" />
