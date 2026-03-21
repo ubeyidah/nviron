@@ -1,6 +1,6 @@
 import { baseOptions } from "@/lib/layout.shared";
 import { Footer } from "@/components/shared/footer";
-import { ArrowRight, BookOpen, Rocket, ShieldCheck } from "lucide-react";
+import { BookOpen, ChevronDown, Rocket, ShieldCheck } from "lucide-react";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import {
   NavbarMenu,
@@ -30,7 +30,12 @@ export default function RootLayout({
           on: "nav",
           children: (
             <NavbarMenu>
-              <NavbarMenuTrigger>Guides</NavbarMenuTrigger>
+              <NavbarMenuTrigger>
+                <span className="inline-flex items-center gap-1.5">
+                  Guides
+                  <ChevronDown className="size-3.5" />
+                </span>
+              </NavbarMenuTrigger>
               <NavbarMenuContent>
                 <NavbarMenuLink href="/docs/quick-start">
                   <div className="group flex max-w-72 items-start gap-3 py-1">
@@ -45,7 +50,6 @@ export default function RootLayout({
                         Install Nviron and validate env vars in minutes.
                       </p>
                     </div>
-                    <ArrowRight className="mt-1 size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </NavbarMenuLink>
                 <NavbarMenuLink href="/docs/best-practices">
@@ -61,7 +65,6 @@ export default function RootLayout({
                         Learn reliable patterns for secure config management.
                       </p>
                     </div>
-                    <ArrowRight className="mt-1 size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </NavbarMenuLink>
                 <NavbarMenuLink href="/docs/examples">
@@ -77,7 +80,6 @@ export default function RootLayout({
                         Explore practical setups for Next.js, Vite, and more.
                       </p>
                     </div>
-                    <ArrowRight className="mt-1 size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </NavbarMenuLink>
               </NavbarMenuContent>
