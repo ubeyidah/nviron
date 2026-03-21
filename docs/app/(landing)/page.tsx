@@ -52,12 +52,21 @@ export const metadata: Metadata = {
       "Open source npm package for Zod-powered environment validation with typed runtime access.",
     url: "https://nviron.vercel.app",
     type: "website",
+    images: [
+      {
+        url: "https://nviron.vercel.app/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Nviron - Type-safe environment validation for TypeScript",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Nviron - Type-safe Environment Validation for TypeScript",
     description:
       "Open source npm package for type-safe environment validation with Zod.",
+    images: ["https://nviron.vercel.app/og.png"],
   },
 };
 

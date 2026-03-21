@@ -132,6 +132,18 @@ export async function generateMetadata({
       description: (page.data as any).description,
       url: `https://nviron.vercel.app${page.url}`,
       type: "article",
+      images: [
+        {
+          url: "https://nviron.vercel.app/og.png",
+          width: 1200,
+          height: 630,
+          alt: "Nviron Documentation",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: ["https://nviron.vercel.app/og.png"],
     },
   };
 }

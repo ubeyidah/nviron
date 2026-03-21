@@ -18,11 +18,20 @@ export const metadata: Metadata = {
       "Open-source contributors behind nviron, led by Ubeyidah and the community.",
     url: "https://nviron.vercel.app/contributors",
     type: "website",
+    images: [
+      {
+        url: "https://nviron.vercel.app/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Nviron Contributors",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Nviron Contributors",
     description: "People contributing to the open-source nviron project.",
+    images: ["https://nviron.vercel.app/og.png"],
   },
 };
 

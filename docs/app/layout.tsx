@@ -1,8 +1,36 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Nviron",
+  url: "https://nviron.vercel.app",
+  logo: "https://nviron.vercel.app/logo.png",
+  sameAs: [
+    "https://github.com/ubeyidah/nviron",
+    "https://www.npmjs.com/package/nviron",
+  ],
+  founder: {
+    "@type": "Person",
+    name: "Ubeyidah",
+    url: "https://ubeyidah.tech",
+    sameAs: [
+      "https://ubeyidah.tech",
+      "https://github.com/ubeyidah",
+      "https://x.com/ubeyidah",
+    ],
+  },
+  member: {
+    "@type": "Organization",
+    name: "Nviron Contributors",
+    url: "https://github.com/ubeyidah/nviron/graphs/contributors",
+  },
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nviron.vercel.app"),
@@ -39,10 +67,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo.png",
-        width: 512,
-        height: 512,
-        alt: "Nviron",
+        url: "https://nviron.vercel.app/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Nviron - Type-safe environment validation for TypeScript",
       },
     ],
   },
@@ -52,7 +80,7 @@ export const metadata: Metadata = {
     description:
       "Type-safe environment variable management for modern JS/TS projects.",
     creator: "@ubeyidah",
-    images: ["/logo.png"],
+    images: ["https://nviron.vercel.app/og.png"],
   },
   robots: {
     index: true,
@@ -75,6 +103,14 @@ export default function RootLayout({
         className="flex flex-col min-h-screen"
       >
         <Analytics />
+        <Script
+          id="nviron-organization-jsonld"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
         <RootProvider>
           <ThemeProvider
             attribute="class"

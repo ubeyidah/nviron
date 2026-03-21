@@ -19,11 +19,20 @@ export const metadata: Metadata = {
       "A complete timeline of nviron releases and changes for developers.",
     url: "https://nviron.vercel.app/changelog",
     type: "article",
+    images: [
+      {
+        url: "https://nviron.vercel.app/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Nviron Changelog",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Nviron Changelog",
     description: "Release-by-release updates for nviron.",
+    images: ["https://nviron.vercel.app/og.png"],
   },
 };
 
