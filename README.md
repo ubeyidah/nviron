@@ -5,6 +5,21 @@
 
 <h3 align="center">NVIRON</h3>
 
+<p align="center">
+  <a href="https://github.com/ubeyidah/nviron/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/ubeyidah/nviron/ci.yml?branch=main&label=ci" alt="CI status" />
+  </a>
+  <a href="https://www.npmjs.com/package/nviron">
+    <img src="https://img.shields.io/npm/v/nviron" alt="npm version" />
+  </a>
+  <a href="https://www.npmjs.com/package/nviron">
+    <img src="https://img.shields.io/npm/dm/nviron" alt="npm downloads" />
+  </a>
+  <a href="https://www.npmjs.com/package/nviron">
+    <img src="https://img.shields.io/npm/l/nviron" alt="license" />
+  </a>
+</p>
+
   <p align="center">Nviron is a lightweight, type-safe e[nviron]ment variable management library built for modern JavaScript and TypeScript projects. It helps you define, validate, and safely access environment variables using <a href="https://zod.dev">Zod</a>.
     <br />
     <br />

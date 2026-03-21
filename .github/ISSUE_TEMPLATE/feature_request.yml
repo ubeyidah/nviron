@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest an enhancement for nviron
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for the idea. Please describe the problem and your proposed solution."
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem are you trying to solve?
+      placeholder: I want to ... because ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      placeholder: Describe your preferred solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: Any alternative approaches you considered
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Links, examples, or prior art
