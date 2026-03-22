@@ -1,4 +1,4 @@
-import { source } from "@/lib/source";
+import { getPageImage, source } from "@/lib/source";
 import {
   DocsBody,
   DocsDescription,
@@ -116,6 +116,7 @@ export async function generateMetadata({
   const resolvedParams = await params;
   const page = source.getPage(resolvedParams.slug);
   if (!page) notFound();
+  const imageUrl = `https://nviron.vercel.app${getPageImage(resolvedParams.slug).url}`;
 
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,16 +135,17 @@ export async function generateMetadata({
       type: "article",
       images: [
         {
-          url: "https://nviron.vercel.app/og.png",
+          url: imageUrl,
           width: 1200,
           height: 630,
-          alt: "Nviron Documentation",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          alt: `${(page.data as any).title} | Nviron Documentation`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      images: ["https://nviron.vercel.app/og.png"],
+      images: [imageUrl],
     },
   };
 }
