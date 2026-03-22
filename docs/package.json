@@ -12,6 +12,7 @@
     "sync:changelog": "node ./scripts/sync-changelog.mjs"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.4",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/mdx": "^2.0.13",
