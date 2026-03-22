@@ -1,4 +1,4 @@
-import { source } from "@/lib/source";
+import { getPageImage, source } from "@/lib/source";
 import {
   DocsBody,
   DocsDescription,
@@ -10,6 +10,10 @@ import { getMDXComponents } from "@/mdx-components";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { createRelativeLink } from "fumadocs-ui/mdx";
+import {
+  MarkdownCopyButton,
+  ViewOptionsPopover,
+} from "@/components/ai/page-actions";
 
 function articleJsonLd(input: {
   title: string;
@@ -71,6 +75,7 @@ export default async function Page({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const description = ((page.data as any).description ?? "") as string;
   const url = `https://nviron.vercel.app${page.url}`;
+  const markdownUrl = `${page.url}.mdx`;
 
   return (
     <DocsPage
@@ -92,6 +97,13 @@ export default async function Page({
       <DocsTitle>{(page.data as any).title}</DocsTitle>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <DocsDescription>{(page.data as any).description}</DocsDescription>
+      <div className="flex flex-row gap-2 items-center border-b pt-2 pb-6">
+        <MarkdownCopyButton markdownUrl={markdownUrl} />
+        <ViewOptionsPopover
+          markdownUrl={markdownUrl}
+          githubUrl={`https://github.com/ubeyidah/nviron/blob/main/docs/content/docs/${page.path}`}
+        />
+      </div>
       <DocsBody>
         <MDX
           components={getMDXComponents({
@@ -116,6 +128,7 @@ export async function generateMetadata({
   const resolvedParams = await params;
   const page = source.getPage(resolvedParams.slug);
   if (!page) notFound();
+  const imageUrl = `https://nviron.vercel.app${getPageImage(resolvedParams.slug).url}`;
 
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,16 +147,17 @@ export async function generateMetadata({
       type: "article",
       images: [
         {
-          url: "https://nviron.vercel.app/og.png",
+          url: imageUrl,
           width: 1200,
           height: 630,
-          alt: "Nviron Documentation",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          alt: `${(page.data as any).title} | Nviron Documentation`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      images: ["https://nviron.vercel.app/og.png"],
+      images: [imageUrl],
     },
   };
 }
