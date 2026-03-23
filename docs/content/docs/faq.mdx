@@ -254,11 +254,11 @@ const env = defineEnv({
 });
 ```
 
-### How do I prevent the process from exiting on error?
+### How do I handle validation errors?
 
-Currently, nviron exits on validation failure by design to prevent running with invalid configuration. This is a safety feature.
+When validation fails, nviron throws an error by design to prevent running with invalid configuration. This is a safety feature.
 
-If you need different behavior, you can catch the error:
+You can catch the thrown error to handle it your way:
 
 ```typescript
 try {
