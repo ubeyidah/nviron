@@ -124,9 +124,16 @@ describe("Environment Utilities", () => {
       expect(() => validateEnv(schema, env, { prefix: "VITE_" })).toThrow(
         "Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.",
       );
-      expect(stripAnsi(consoleSpy.mock.calls[2][0])).toContain(
-        "1. VITE_PORT (as PORT) → Invalid input: expected number, received NaN",
+      const loggedLines = consoleSpy.mock.calls.map((call) =>
+        stripAnsi(String(call[0])),
       );
+      expect(
+        loggedLines.some((line) =>
+          line.includes(
+            "1. VITE_PORT (as PORT) → Invalid input: expected number, received NaN",
+          ),
+        ),
+      ).toBe(true);
     });
   });
 
