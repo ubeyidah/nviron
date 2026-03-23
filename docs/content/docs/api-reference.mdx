@@ -355,7 +355,7 @@ z.number().refine((val) => val % 2 === 0, {
 
 ## Error Handling
 
-When validation fails, nviron formats errors in a user-friendly way and exits the process.
+When validation fails, nviron formats errors in a user-friendly way and then throws an error.
 
 ### Error Output Format
 
@@ -391,13 +391,13 @@ const env = defineEnv({
 });
 ```
 
-### Exit Behavior
+### Runtime Behavior
 
-By default, nviron exits the process when validation fails:
+By default, nviron throws when validation fails:
 
-- Exit code: `1`
-- Prevents application from running with invalid configuration
-- Displays colored error messages in the console
+- Throws an `Error` after printing formatted validation issues
+- Lets frameworks and runtimes handle failure safely (for example Next.js error boundaries)
+- Prevents silent startup with invalid configuration
 
 <Callout type="warn">
   **Production Behavior:** In production environments, ensure all environment

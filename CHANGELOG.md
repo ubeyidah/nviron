@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project generally follows [Semantic Versioning](https://semver.org/).
 
+## [2.1.10] - 2026-03-23
+
+### Fixed
+
+- Replaced `process.exit(1)` with a thrown validation error so invalid env config does not terminate Next.js and other Node.js server processes.
+
 ## [2.1.9] - 2026-03-21
 
 ### Changed
@@ -134,6 +140,7 @@ and this project generally follows [Semantic Versioning](https://semver.org/).
 - TypeScript project setup.
 - First `env` utility implementation.
 
+[2.1.10]: https://github.com/ubeyidah/nviron/compare/v2.1.9...v2.1.10
 [2.1.9]: https://github.com/ubeyidah/nviron/compare/v2.1.8...v2.1.9
 [2.1.8]: https://github.com/ubeyidah/nviron/compare/v2.1.7...v2.1.8
 [2.1.7]: https://github.com/ubeyidah/nviron/compare/v2.1.6...v2.1.7

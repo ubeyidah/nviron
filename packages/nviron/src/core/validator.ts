@@ -3,7 +3,6 @@ import { EnvSchema } from "../types/env-schema";
 import { Logger } from "../utils/logger";
 import { EnvConfig, EnvData } from "../types";
 import { normalizeEnv } from "../utils/utils";
-import { isNode } from "./../utils/detect-env";
 
 export const validateEnv = <T extends EnvSchema>(
   schema: T,
@@ -29,13 +28,9 @@ export const validateEnv = <T extends EnvSchema>(
 
     logger.tip();
 
-    if (isNode) {
-      process.exit(1);
-    } else {
-      throw new Error(
-        "Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.",
-      );
-    }
+    throw new Error(
+      "Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.",
+    );
   }
 
   return parsed.data;
