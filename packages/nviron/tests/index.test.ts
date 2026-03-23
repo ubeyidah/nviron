@@ -98,7 +98,7 @@ describe("Environment Utilities", () => {
       });
     });
 
-    it("should exit process on invalid env", () => {
+    it("should throw on invalid env", () => {
       const env = {
         PORT: "not-a-number",
       };
@@ -106,12 +106,9 @@ describe("Environment Utilities", () => {
         PORT: z.coerce.number(),
       };
 
-      const exitMock = vi.spyOn(process, "exit").mockImplementation(() => {
-        throw new Error("process.exit called");
-      });
-
-      expect(() => validateEnv(schema, env, {})).toThrow("process.exit called");
-      expect(exitMock).toHaveBeenCalledWith(1);
+      expect(() => validateEnv(schema, env, {})).toThrow(
+        "Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.",
+      );
     });
 
     it("should display original and normalized keys in error messages for prefixed variables", () => {
@@ -122,15 +119,11 @@ describe("Environment Utilities", () => {
         PORT: z.coerce.number(),
       };
 
-      const exitMock = vi.spyOn(process, "exit").mockImplementation(() => {
-        throw new Error("process.exit called");
-      });
       const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
       expect(() => validateEnv(schema, env, { prefix: "VITE_" })).toThrow(
-        "process.exit called",
+        "Nviron: validation failed missing or invalid variable(s) in your .env. Check the details above.",
       );
-      expect(exitMock).toHaveBeenCalledWith(1);
       expect(stripAnsi(consoleSpy.mock.calls[2][0])).toContain(
         "1. VITE_PORT (as PORT) → Invalid input: expected number, received NaN",
       );
