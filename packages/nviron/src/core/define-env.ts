@@ -30,9 +30,18 @@ import { validateEnv } from "./validator";
 
 const defineEnv = <T extends EnvSchema>(
   schema: T,
-  config: EnvConfig = {},
+  config: EnvConfig = {}
 ): z.infer<z.ZodObject<T>> => {
-  const source = config.source || process.env;
+  const defaultSource =
+    typeof process !== "undefined" && process?.env ? process.env : undefined;
+
+  if (!config.source && !defaultSource) {
+    throw new Error(
+      "Nviron: no environment source found in this runtime. Pass { source } explicitly."
+    );
+  }
+
+  const source = config.source ?? defaultSource;
   return validateEnv(schema, source, config);
 };
 
